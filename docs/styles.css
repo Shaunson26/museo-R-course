@@ -1,0 +1,58 @@
+.red {
+  color: red;
+}
+
+.remark-slide-content {
+  padding: 0.5em 2em 1em 2em;
+}
+
+.remark-code-line {
+  background: #f8f8f8
+}
+
+.remark-inline-code {
+  background: #f8f8f8
+}
+
+.inverse > .remark-inline-code {
+  background: unset;
+  
+}
+
+
+.remark-code-line-highlighted {
+  background-color: rgba(255,255,0,0.5) !important;
+}
+
+.footnote {
+  bottom: 0.5em;
+}
+
+.section-subtitle {
+  font-family: 'Yanone Kaffeesatz';
+  font-size: 1.75em;
+}
+
+.caption {
+  margin: 0;
+  text-align: right;
+}
+
+.large {
+  font-family: 'Yanone Kaffeesatz';
+  font-size: 2em;
+}
+
+.pull-left-66  { width: 66%; float: left; }
+.pull-right-33 { width: 33%; float: right; }
+
+.pull-left-33  { width: 33%; float: left; }
+.pull-right-66 { width: 66%; float: right; }
+
+.width-66{
+  width: 66%;
+}
+
+.width-33{
+  width: 33%;
+}
