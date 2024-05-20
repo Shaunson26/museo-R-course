@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.Rdata
+.httr-oauth
+.DS_Store
+.quarto
+books/
+misc-temp
+other-courses/
+slides/
+course-details/
