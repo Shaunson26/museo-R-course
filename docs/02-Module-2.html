@@ -65,6 +65,13 @@ Typically a new **data frame** object in R from a **file** on your computer or f
 
 ```r
 penguins &lt;- read.csv(file = '../student-material/data/penguins.csv')
+```
+
+--
+
+
+```r
+# View the first 6 rows
 head(penguins)
 ```
 
@@ -668,7 +675,7 @@ class: middle
 
 # Spreadsheets often organised for humans not computers
 
-This create immense difficulties for data import!
+This create immenses difficulties for data import!
 
 &lt;div class="figure" style="text-align: center"&gt;
 &lt;img src="images/messy-spreadsheet.png" alt="Spreadsheet organised for human not computer" width="65%" /&gt;
@@ -724,7 +731,10 @@ Open the file
 
 .inverse[`M02-01-importing-data.R`]
 
-and we will discuss each of the exercises together
+and attempt to do the exercises.
+
+We will discuss them shortly
+
 
 ]
 
@@ -983,7 +993,8 @@ flights %&gt;%
 #&gt;  8 EWR    BOS    5327
 #&gt;  9 EWR    BQN     297
 #&gt; 10 EWR    BTV     931
-#&gt; # ℹ 214 more rows
+#&gt; 11 EWR    BUF     973
+#&gt; # ℹ 213 more rows
 ```
 ]
 
@@ -1044,7 +1055,8 @@ flights %&gt;%
 #&gt;  8  2013     1     1     1934           1725       129     2126           1855       151
 #&gt;  9  2013     1     1     1938           1703       155     2109           1823       166
 #&gt; 10  2013     1     1     1942           1705       157     2124           1830       174
-#&gt; # ℹ 9,713 more rows
+#&gt; 11  2013     1     1     2006           1630       216     2230           1848       222
+#&gt; # ℹ 9,712 more rows
 #&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 #&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
 ```
@@ -1110,7 +1122,8 @@ flights %&gt;%
 #&gt;  8  2013     1     1      557            600        -3      709            723       -14
 #&gt;  9  2013     1     1      557            600        -3      838            846        -8
 #&gt; 10  2013     1     1      558            600        -2      753            745         8
-#&gt; # ℹ 336,766 more rows
+#&gt; 11  2013     1     1      558            600        -2      849            851        -2
+#&gt; # ℹ 336,765 more rows
 #&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 #&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
 ```
@@ -1141,7 +1154,8 @@ flights %&gt;%
 #&gt;  8  2013    12     1      546            545         1      826            835        -9
 #&gt;  9  2013    12     1      549            600       -11      648            659       -11
 #&gt; 10  2013    12     1      550            600       -10      825            854       -29
-#&gt; # ℹ 336,766 more rows
+#&gt; 11  2013    12     1      554            600        -6      827            849       -22
+#&gt; # ℹ 336,765 more rows
 #&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 #&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
 ```
@@ -1173,7 +1187,8 @@ flights %&gt;%
 #&gt;  8 LGA    IAD  
 #&gt;  9 JFK    MCO  
 #&gt; 10 LGA    ORD  
-#&gt; # ℹ 214 more rows
+#&gt; 11 JFK    PBI  
+#&gt; # ℹ 213 more rows
 ```
 
 ---
@@ -1202,7 +1217,8 @@ flights %&gt;%
 #&gt;  8  2013     1     1      557            600        -3      709            723       -14
 #&gt;  9  2013     1     1      557            600        -3      838            846        -8
 #&gt; 10  2013     1     1      558            600        -2      753            745         8
-#&gt; # ℹ 214 more rows
+#&gt; 11  2013     1     1      558            600        -2      849            851        -2
+#&gt; # ℹ 213 more rows
 #&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 #&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
 ```
@@ -1219,7 +1235,10 @@ Open the file
 
 .inverse[`M02-02-dplyr-rows.R`]
 
-and we will discuss each of the exercises together
+and attempt to do the exercises.
+
+We will discuss them shortly
+
 
 ]
 
@@ -1290,10 +1309,59 @@ flights %&gt;%
 
 `mutate()` is used extensively for cleaning data
 
-- clean words in a columns
+- update values 
+- fix word errors
 - changing data types
 
 We will use **mutate()** for detailed data cleaning later on
+
+
+```r
+students
+```
+
+```
+#&gt; # A tibble: 6 × 5
+#&gt;   `Student ID` `Full Name`      favourite.food     mealPlan            AGE  
+#&gt;          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;chr&gt;
+#&gt; 1            1 Sunil Huffmann   Strawberry yoghurt Lunch only          4    
+#&gt; 2            2 Barclay Lynn     French fries       Lunch only          5    
+#&gt; 3            3 Jayendra Lyne    &lt;NA&gt;               Breakfast and lunch 7    
+#&gt; 4            4 Leon Rossini     Anchovies          Lunch only          &lt;NA&gt; 
+#&gt; 5            5 Chidiegwu Dunkel Pizza              Breakfast and lunch five 
+#&gt; 6            6 Güvenç Attila    Ice cream          Lunch only          6
+```
+
+---
+
+# `mutate()` for data cleaning
+
+`mutate()` is used extensively for cleaning data
+
+- update values 
+- fix word errors
+- changing data types
+
+We will use **mutate()** for detailed data cleaning later on
+
+
+```r
+students %&gt;% 
+  mutate(AGE = case_when(AGE == 'five' ~ '5', .default = AGE),
+         AGE = as.numeric(AGE))
+```
+
+```
+#&gt; # A tibble: 6 × 5
+#&gt;   `Student ID` `Full Name`      favourite.food     mealPlan              AGE
+#&gt;          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;dbl&gt;
+#&gt; 1            1 Sunil Huffmann   Strawberry yoghurt Lunch only              4
+#&gt; 2            2 Barclay Lynn     French fries       Lunch only              5
+#&gt; 3            3 Jayendra Lyne    &lt;NA&gt;               Breakfast and lunch     7
+#&gt; 4            4 Leon Rossini     Anchovies          Lunch only             NA
+#&gt; 5            5 Chidiegwu Dunkel Pizza              Breakfast and lunch     5
+#&gt; 6            6 Güvenç Attila    Ice cream          Lunch only              6
+```
 
 ---
 
@@ -1461,7 +1529,10 @@ Open the file
 
 .inverse[`M02-03-dplyr-columns.R`]
 
-and we will discuss each of the exercises together
+and attempt to do the exercises.
+
+We will discuss them shortly
+
 
 ]
 
@@ -1836,7 +1907,10 @@ Open the file
 
 .inverse[`M02-04-dplyr-summarise.R`]
 
-and we will discuss each of the exercises together
+and attempt to do the exercises.
+
+We will discuss them shortly
+
 
 ]
 
@@ -2217,11 +2291,11 @@ persons
 
 ```
 #&gt;   person age       hospital
-#&gt; 1      A  24 North Hospital
-#&gt; 2      B  37        Missing
-#&gt; 3      C  38     St. Mark's
-#&gt; 4      D  27  Port Hospital
-#&gt; 5      E  26       Military
+#&gt; 1      A  20 North Hospital
+#&gt; 2      B  42        Missing
+#&gt; 3      C  37     St. Mark's
+#&gt; 4      D  34  Port Hospital
+#&gt; 5      E  29       Military
 ```
 
 ]
@@ -2254,11 +2328,11 @@ persons %&gt;%
 
 ```
 #&gt;   person age       hospital address
-#&gt; 1      A  24 North Hospital     ...
-#&gt; 2      B  37        Missing    &lt;NA&gt;
-*#&gt; 3      C  38     St. Mark's    &lt;NA&gt;
-#&gt; 4      D  27  Port Hospital     ...
-*#&gt; 5      E  26       Military    &lt;NA&gt;
+#&gt; 1      A  20 North Hospital     ...
+#&gt; 2      B  42        Missing    &lt;NA&gt;
+*#&gt; 3      C  37     St. Mark's    &lt;NA&gt;
+#&gt; 4      D  34  Port Hospital     ...
+*#&gt; 5      E  29       Military    &lt;NA&gt;
 ```
 
 ---
@@ -2276,10 +2350,10 @@ persons
 
 ```
 #&gt;   person age
-#&gt; 1      A  42
-#&gt; 2      B  34
-#&gt; 3      C  31
-#&gt; 4      E  23
+#&gt; 1      A  19
+#&gt; 2      B  29
+#&gt; 3      C  28
+#&gt; 4      E  20
 ```
 
 ]
@@ -2312,9 +2386,9 @@ persons %&gt;%
 
 ```
 #&gt;   person age amount
-#&gt; 1      A  42     $5
-#&gt; 2      B  34    $10
-#&gt; 3      C  31     $8
+#&gt; 1      A  19     $5
+#&gt; 2      B  29    $10
+#&gt; 3      C  28     $8
 ```
 ]
 
@@ -2329,10 +2403,10 @@ persons %&gt;%
 
 ```
 #&gt;   person age amount
-#&gt; 1      A  42     $5
-#&gt; 2      B  34    $10
-#&gt; 3      C  31     $8
-#&gt; 4      E  23   &lt;NA&gt;
+#&gt; 1      A  19     $5
+#&gt; 2      B  29    $10
+#&gt; 3      C  28     $8
+#&gt; 4      E  20   &lt;NA&gt;
 #&gt; 5      D  NA     $4
 ```
 ]
@@ -2350,11 +2424,12 @@ Open the file
 
 .inverse[`M02-05-dplyr-joins.R`]
 
-and we will discuss each of the exercises together
+and attempt to do the exercises.
+
+We will discuss them shortly
+
 
 ]
-
----
 
 ---
 
@@ -2385,12 +2460,12 @@ gene_data
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     5     6     8     5     5
-#&gt; 2 A         2     5     8    17     8     7
-#&gt; 3 A         3     8     9     8     9     8
-#&gt; 4 B         1     9     6    14    13     5
-#&gt; 5 B         2     4    11     7     6     8
-#&gt; 6 B         3     5     8     6     2     7
+#&gt; 1 A         1     5     5    14     5    10
+#&gt; 2 A         2     3     6    11     6     2
+#&gt; 3 A         3     3     3     7    11     9
+#&gt; 4 B         1     4     8     7     7    12
+#&gt; 5 B         2     6    10     8     5    11
+#&gt; 6 B         3    11     4     8     5     9
 ```
 
 ]
@@ -2413,18 +2488,18 @@ gene_data_long
 #&gt;    Trt     Rep Gene  Count
 #&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
 #&gt;  1 A         1 Gene1     5
-#&gt;  2 A         1 Gene2     6
-#&gt;  3 A         1 Gene3     8
+#&gt;  2 A         1 Gene2     5
+#&gt;  3 A         1 Gene3    14
 #&gt;  4 A         1 Gene4     5
-#&gt;  5 A         1 Gene5     5
-#&gt;  6 A         2 Gene1     5
-#&gt;  7 A         2 Gene2     8
-#&gt;  8 A         2 Gene3    17
-#&gt;  9 A         2 Gene4     8
-#&gt; 10 A         2 Gene5     7
-#&gt; 11 A         3 Gene1     8
-#&gt; 12 A         3 Gene2     9
-#&gt; 13 A         3 Gene3     8
+#&gt;  5 A         1 Gene5    10
+#&gt;  6 A         2 Gene1     3
+#&gt;  7 A         2 Gene2     6
+#&gt;  8 A         2 Gene3    11
+#&gt;  9 A         2 Gene4     6
+#&gt; 10 A         2 Gene5     2
+#&gt; 11 A         3 Gene1     3
+#&gt; 12 A         3 Gene2     3
+#&gt; 13 A         3 Gene3     7
 #&gt; # ℹ 17 more rows
 ```
 
@@ -2445,12 +2520,12 @@ gene_data
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     5     6     8     5     5
-#&gt; 2 A         2     5     8    17     8     7
-#&gt; 3 A         3     8     9     8     9     8
-#&gt; 4 B         1     9     6    14    13     5
-#&gt; 5 B         2     4    11     7     6     8
-#&gt; 6 B         3     5     8     6     2     7
+#&gt; 1 A         1     5     5    14     5    10
+#&gt; 2 A         2     3     6    11     6     2
+#&gt; 3 A         3     3     3     7    11     9
+#&gt; 4 B         1     4     8     7     7    12
+#&gt; 5 B         2     6    10     8     5    11
+#&gt; 6 B         3    11     4     8     5     9
 ```
 
 --
@@ -2503,12 +2578,12 @@ gene_data
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     5     6     8     5     5
-#&gt; 2 A         2     5     8    17     8     7
-#&gt; 3 A         3     8     9     8     9     8
-#&gt; 4 B         1     9     6    14    13     5
-#&gt; 5 B         2     4    11     7     6     8
-#&gt; 6 B         3     5     8     6     2     7
+#&gt; 1 A         1     5     5    14     5    10
+#&gt; 2 A         2     3     6    11     6     2
+#&gt; 3 A         3     3     3     7    11     9
+#&gt; 4 B         1     4     8     7     7    12
+#&gt; 5 B         2     6    10     8     5    11
+#&gt; 6 B         3    11     4     8     5     9
 ```
 
 ]
@@ -2532,16 +2607,16 @@ gene_data %&gt;%
 #&gt;    Trt     Rep Gene  Count
 #&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
 #&gt;  1 A         1 Gene1     5
-#&gt;  2 A         1 Gene2     6
-#&gt;  3 A         1 Gene3     8
+#&gt;  2 A         1 Gene2     5
+#&gt;  3 A         1 Gene3    14
 #&gt;  4 A         1 Gene4     5
-#&gt;  5 A         1 Gene5     5
-#&gt;  6 A         2 Gene1     5
-#&gt;  7 A         2 Gene2     8
-#&gt;  8 A         2 Gene3    17
-#&gt;  9 A         2 Gene4     8
-#&gt; 10 A         2 Gene5     7
-#&gt; 11 A         3 Gene1     8
+#&gt;  5 A         1 Gene5    10
+#&gt;  6 A         2 Gene1     3
+#&gt;  7 A         2 Gene2     6
+#&gt;  8 A         2 Gene3    11
+#&gt;  9 A         2 Gene4     6
+#&gt; 10 A         2 Gene5     2
+#&gt; 11 A         3 Gene1     3
 #&gt; # ℹ 19 more rows
 ```
 ]
@@ -2565,16 +2640,16 @@ gene_data %&gt;%
 #&gt; # A tibble: 10 × 3
 #&gt;    Trt   Gene  mean_Count
 #&gt;    &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt;
-#&gt;  1 A     Gene1       6   
-#&gt;  2 A     Gene2       7.67
-#&gt;  3 A     Gene3      11   
+#&gt;  1 A     Gene1       3.67
+#&gt;  2 A     Gene2       4.67
+#&gt;  3 A     Gene3      10.7 
 #&gt;  4 A     Gene4       7.33
-#&gt;  5 A     Gene5       6.67
-#&gt;  6 B     Gene1       6   
-#&gt;  7 B     Gene2       8.33
-#&gt;  8 B     Gene3       9   
-#&gt;  9 B     Gene4       7   
-#&gt; 10 B     Gene5       6.67
+#&gt;  5 A     Gene5       7   
+#&gt;  6 B     Gene1       7   
+#&gt;  7 B     Gene2       7.33
+#&gt;  8 B     Gene3       7.67
+#&gt;  9 B     Gene4       5.67
+#&gt; 10 B     Gene5      10.7
 ```
 
 ---
@@ -2594,16 +2669,16 @@ gene_data_long
 #&gt;    Trt     Rep Gene  Count
 #&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
 #&gt;  1 A         1 Gene1     5
-#&gt;  2 A         1 Gene2     6
-#&gt;  3 A         1 Gene3     8
+#&gt;  2 A         1 Gene2     5
+#&gt;  3 A         1 Gene3    14
 #&gt;  4 A         1 Gene4     5
-#&gt;  5 A         1 Gene5     5
-#&gt;  6 A         2 Gene1     5
-#&gt;  7 A         2 Gene2     8
-#&gt;  8 A         2 Gene3    17
-#&gt;  9 A         2 Gene4     8
-#&gt; 10 A         2 Gene5     7
-#&gt; 11 A         3 Gene1     8
+#&gt;  5 A         1 Gene5    10
+#&gt;  6 A         2 Gene1     3
+#&gt;  7 A         2 Gene2     6
+#&gt;  8 A         2 Gene3    11
+#&gt;  9 A         2 Gene4     6
+#&gt; 10 A         2 Gene5     2
+#&gt; 11 A         3 Gene1     3
 #&gt; # ℹ 19 more rows
 ```
 
@@ -2623,12 +2698,12 @@ gene_data_long %&gt;%
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     5     6     8     5     5
-#&gt; 2 A         2     5     8    17     8     7
-#&gt; 3 A         3     8     9     8     9     8
-#&gt; 4 B         1     9     6    14    13     5
-#&gt; 5 B         2     4    11     7     6     8
-#&gt; 6 B         3     5     8     6     2     7
+#&gt; 1 A         1     5     5    14     5    10
+#&gt; 2 A         2     3     6    11     6     2
+#&gt; 3 A         3     3     3     7    11     9
+#&gt; 4 B         1     4     8     7     7    12
+#&gt; 5 B         2     6    10     8     5    11
+#&gt; 6 B         3    11     4     8     5     9
 ```
 ]
 
@@ -2652,17 +2727,17 @@ gene_data_long
 #&gt; # A tibble: 28 × 4
 #&gt;    Trt     Rep Gene  Count
 #&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
-*#&gt;  1 A         1 Gene2     6
-#&gt;  2 A         1 Gene3     8
+*#&gt;  1 A         1 Gene2     5
+#&gt;  2 A         1 Gene3    14
 #&gt;  3 A         1 Gene4     5
-#&gt;  4 A         1 Gene5     5
-#&gt;  5 A         2 Gene1     5
-#&gt;  6 A         2 Gene2     8
-*#&gt;  7 A         2 Gene4     8
-#&gt;  8 A         2 Gene5     7
-#&gt;  9 A         3 Gene1     8
-#&gt; 10 A         3 Gene2     9
-#&gt; 11 A         3 Gene3     8
+#&gt;  4 A         1 Gene5    10
+#&gt;  5 A         2 Gene1     3
+#&gt;  6 A         2 Gene2     6
+*#&gt;  7 A         2 Gene4     6
+#&gt;  8 A         2 Gene5     2
+#&gt;  9 A         3 Gene1     3
+#&gt; 10 A         3 Gene2     3
+#&gt; 11 A         3 Gene3     7
 #&gt; # ℹ 17 more rows
 ```
 
@@ -2682,12 +2757,12 @@ gene_data_long %&gt;%
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene2 Gene3 Gene4 Gene5 Gene1
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-*#&gt; 1 A         1     6     8     5     5    NA
-*#&gt; 2 A         2     8    NA     8     7     5
-#&gt; 3 A         3     9     8     9     8     8
-#&gt; 4 B         1     6    14    13     5     9
-#&gt; 5 B         2    11     7     6     8     4
-#&gt; 6 B         3     8     6     2     7     5
+*#&gt; 1 A         1     5    14     5    10    NA
+*#&gt; 2 A         2     6    NA     6     2     3
+#&gt; 3 A         3     3     7    11     9     3
+#&gt; 4 B         1     8     7     7    12     4
+#&gt; 5 B         2    10     8     5    11     6
+#&gt; 6 B         3     4     8     5     9    11
 ```
 ]
 
@@ -2709,12 +2784,12 @@ gene_data_long %&gt;%
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene2 Gene3 Gene4 Gene5 Gene1
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     6     8     5     5     0
-#&gt; 2 A         2     8     0     8     7     5
-#&gt; 3 A         3     9     8     9     8     8
-#&gt; 4 B         1     6    14    13     5     9
-#&gt; 5 B         2    11     7     6     8     4
-#&gt; 6 B         3     8     6     2     7     5
+#&gt; 1 A         1     5    14     5    10     0
+#&gt; 2 A         2     6     0     6     2     3
+#&gt; 3 A         3     3     7    11     9     3
+#&gt; 4 B         1     8     7     7    12     4
+#&gt; 5 B         2    10     8     5    11     6
+#&gt; 6 B         3     4     8     5     9    11
 ```
 
 ---
@@ -2730,7 +2805,10 @@ Open the file
 
 .inverse[`M02-06-tidyr-reshape-pivot.R`]
 
-and we will discuss each of the exercises together
+and attempt to do the exercises.
+
+We will discuss them shortly
+
 
 ]
 

@@ -68,13 +68,15 @@ library(ggplot2)
 
 ---
 
-# We will focus on 5 types of plots
+# We will focus on 7 types of plots
 
 1. Histograms
 2. Scatterplots
 3. Line plots
 4. Boxplots
 5. Barplots
+6. Dendrograms
+7. Heatmaps
 
 ---
 
@@ -102,7 +104,7 @@ ggplot(
 ]
 
 .pull-right[
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -136,20 +138,20 @@ penguins %&gt;%
 
 # Histograms
 
-Histograms provides a visual representation of the distribution of data.
+Histograms provide a visual representation of the **distribution of a single variable**. 
 
 
 ```r
 penguins %&gt;% 
   ggplot(aes(x = flipper_length_mm)) + # required aesthetic is x 
-  geom_histogram()
+  geom_histogram()                     # prints a message about bins/binwidth
 ```
 
 ```
 #&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-6-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -159,12 +161,13 @@ penguins %&gt;%
 .pull-left[
 
 ```r
+# N values within 1 : 180, 181, 182, ...
 penguins %&gt;% 
   ggplot(aes(x = flipper_length_mm)) +
   geom_histogram(binwidth = 1)
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 --
@@ -172,12 +175,13 @@ penguins %&gt;%
 .pull-right[
 
 ```r
+# N values within 10 : 180, 190, 200, ...
 penguins %&gt;% 
   ggplot(aes(x = flipper_length_mm)) +
   geom_histogram(binwidth = 10)
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -191,26 +195,25 @@ penguins %&gt;%
 penguins %&gt;% 
   ggplot(aes(x = flipper_length_mm)) + 
   geom_histogram(binwidth = 5,
-                 fill = 'red', color = 'blue') # adjust the fill and colour
+*                fill = 'red', color = 'blue')
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-9-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-9-1.png" width="65%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 # Scatterplots
 
-Scatterplots provides a visual representation of relationships.
+Scatterplots provide a visual representation of **relationships between 2 variables**.
 
 
 ```r
 penguins %&gt;%                          
-  ggplot(aes(x = flipper_length_mm, 
-             y = body_mass_g)) +
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
   geom_point()
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-10-1.png" width="65%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -221,12 +224,11 @@ penguins %&gt;%
 
 ```r
 penguins %&gt;%                          
-  ggplot(aes(x = flipper_length_mm, 
-             y = body_mass_g)) +
-  geom_point(size = 3, colour = 'red', alpha = 0.5)
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+* geom_point(size = 3, colour = 'red', alpha = 0.5)
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-11-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-11-1.png" width="65%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -244,18 +246,18 @@ flights_small %&gt;%
   geom_point()
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
 ]
-
+--
 .pull-right[
 
 ```r
 flights_small %&gt;% 
   ggplot(aes(x = dep_delay, y = arr_delay)) +
-  geom_point(alpha = 0.2)
+* geom_point(alpha = 0.1)
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -274,18 +276,18 @@ overplot_data %&gt;%
   geom_point()
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
 ]
-
+--
 .pull-right[
 
 ```r
 overplot_data %&gt;% 
   ggplot(aes(x = time, y = growth)) +
-  geom_jitter(width = 0.2) # jitter within x
+* geom_jitter(width = 0.2)
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -297,12 +299,64 @@ We use an aesthetic argument
 
 ```r
 penguins %&gt;%                          
-  ggplot(aes(x = flipper_length_mm, y = body_mass_g, 
-             colour = species)) +
-  geom_point()
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+* geom_point(aes(colour = species))
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-18-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-18-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# A note on **inheritence** across layers
+
+Aesthetic mappings in `geom_*()` are **local** and **not** passed on .. 
+  
+
+
+```r
+penguins %&gt;%                          
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(colour = species)) +
+* geom_smooth(method = 'lm', se = FALSE) # A regression for all data
+```
+
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-19-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# A note on **inheritence** across layers
+
+Aesthetic mappings in `geom_*()` are **local** and **not** passed on .. 
+  
+
+
+```r
+penguins %&gt;%                          
+* ggplot(aes(x = flipper_length_mm, y = body_mass_g, colour = species)) + # color is "global"
+  geom_point() +
+  geom_smooth(method = 'lm', se = FALSE) 
+```
+
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-20-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: center, middle, inverse
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`...`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
 
 ---
 
@@ -317,7 +371,7 @@ penguins %&gt;%
   geom_boxplot()
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-19-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-21-1.png" width="45%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -334,7 +388,7 @@ growth_data_a %&gt;%
   geom_line()
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-21-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-23-1.png" width="45%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -351,7 +405,7 @@ growth_data %&gt;%
   geom_line()
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -363,7 +417,7 @@ growth_data %&gt;%
   geom_line()
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -381,7 +435,7 @@ growth_data2 %&gt;%
   geom_line()
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
@@ -394,7 +448,7 @@ growth_data2 %&gt;%
   geom_line()
 ```
 
-&lt;img src="02-Module-3_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="03-Module-3_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 
