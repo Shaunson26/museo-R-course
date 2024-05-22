@@ -892,7 +892,7 @@ Sys.Date()
 ```
 
 ```
-#&gt; [1] "2024-05-20"
+#&gt; [1] "2024-05-21"
 ```
 ]
 
@@ -981,7 +981,7 @@ c(Sys.Date(), Sys.Date() - 1)
 ```
 
 ```
-#&gt; [1] "2024-05-20" "2024-05-19"
+#&gt; [1] "2024-05-21" "2024-05-20"
 ```
 
 
@@ -1026,7 +1026,7 @@ c(1, Sys.Date())
 ```
 
 ```
-#&gt; [1]     1 19863
+#&gt; [1]     1 19864
 ```
 ]
 --
@@ -1039,7 +1039,7 @@ c('Tom', Sys.Date())
 ```
 
 ```
-#&gt; [1] "Tom"   "19863"
+#&gt; [1] "Tom"   "19864"
 ```
 ]
 --
@@ -2125,6 +2125,18 @@ get_quote()
 
 ---
 
+# The tidyverse set of packages
+
+&lt;img src="images/tidyverse.png" width="83%" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+
+ [https://www.tidyverse.org/](https://www.tidyverse.org/)
+
+]
+
+---
+
 # Namespacing
 
 **Namespacing** allows us to use a package function without loading it
@@ -2133,107 +2145,33 @@ get_quote()
  
 --
  
-E.g. `select()` is a function of the **`dplyr`** package 
+E.g. quick access to **`readr`** functions
+
+
 
 
 ```r
-# From the iris data.frame select the columns `Petal.Width`, `species`
-select(iris, Petal.Width, species)
+readr::read_csv('data/penguins.csv', show_col_types = FALSE)
 ```
 
-
 ```
-#&gt; Error in select(iris, Petal.Width, species) : 
-#&gt;   could not find function "select"
+#&gt; # A tibble: 344 × 8
+#&gt;   species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g sex     year
+#&gt;   &lt;chr&gt;   &lt;chr&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;
+#&gt; 1 Adelie  Torgersen           39.1          18.7               181        3750 male    2007
+#&gt; 2 Adelie  Torgersen           39.5          17.4               186        3800 female  2007
+#&gt; 3 Adelie  Torgersen           40.3          18                 195        3250 female  2007
+#&gt; 4 Adelie  Torgersen           NA            NA                  NA          NA &lt;NA&gt;    2007
+#&gt; 5 Adelie  Torgersen           36.7          19.3               193        3450 female  2007
+#&gt; 6 Adelie  Torgersen           39.3          20.6               190        3650 male    2007
+#&gt; 7 Adelie  Torgersen           38.9          17.8               181        3625 female  2007
+#&gt; # ℹ 337 more rows
 ```
  
---
-
-
-```r
-dplyr::select(iris, Petal.Width, Species)
-```
-
-
-```
-#&gt;   Petal.Width Species
-#&gt; 1         0.2  setosa
-#&gt; 2         0.2  setosa
-#&gt; 3         0.2  setosa
-#&gt; 4         0.2  setosa
-#&gt; 5         0.2  setosa
-```
-
---
 
 .footnote[
 
 Using RStudio tab completion with `package_name::` lists all of it's functions!
-
-]
-
----
-
-# Namespacing
-
-Is also important when the **same function name** exists in different packages
-
-- It ensures we explicitly use the function we want
-
---
-
-E.g. `filter()` is found in **`stats`** and **`dplyr`**
-
-
-.pull-left[
-
-
-```r
-stats::filter()
-```
-
-```
-function (x, filter, 
-    method = c("convolution", "recursive"), 
-    sides = 2L, circular = FALSE, init = NULL)
-```
-]
-
-.pull-right[
-
-```r
-dplyr::filter()
-```
-
-```
-function (.data, ..., .by = NULL, 
-    .preserve = FALSE)
-```
-
-]
-
-&lt;br&gt;
-&lt;br&gt;
-
---
-
-Which package is `filter()` being used from?
-
-
-```r
-filter(my_data)
-```
-
-
----
-
-# The tidyverse set of packages
-
-&lt;img src="images/tidyverse.png" width="83%" style="display: block; margin: auto;" /&gt;
-
-.footnote[
-
- [https://www.tidyverse.org/](https://www.tidyverse.org/)
 
 ]
 
@@ -2249,331 +2187,7 @@ Open the file
 
 .inverse[`M01-04-R-packages.R`]
 
-and attempt to do the exercises.
-
-We will discuss them shortly
-
-
-]
-
----
-
-class: center, middle
-
-# R in action - making a visualisation with ggplot2
-
----
-
-# We will build this visualisation
-
-
-
-.pull-left[
-![](01-Module-1_files/figure-html/unnamed-chunk-145-1.png)&lt;!-- --&gt;
-]
-
---
-
-.pull-right[
-
-And gain experience in
-
-  - Importing data
-  
-  
-  - Using functions and arguments
-  
-  - Using data.frame columns
-  
-  - Chaining functions together
-  
-  - Exporting to a file
-
-]
-
-
----
-
-# The task
-
-Import and examine the data
-
-
-```r
-penguins &lt;- read.csv('student-material/data/penguins.csv')
-```
-
---
-
-Build a visualisation using **`ggplot2`**
-
-
-```r
-ggplot(
-  data = penguins,
-  mapping = aes(x = flipper_length_mm, y = body_mass_g, color = species)
-  ) +
-  geom_point() +
-  geom_smooth(method = 'lm', se = FALSE) +
-  labs(title="Body mass and flipper length", x="Flipper length (mm)", y ="Body mass (g)")
-```
-
---
-
-Export the visualisation to a file
-
-
-```r
-ggsave(filename = 'my-first-plot.png', plot = last_plot(),
-       width = 18, height = 15, units = 'cm')
-```
-
----
-
-# Importing a dataset
-
-- The provided file `data/penguins.csv` is a dataset on pengiuns from the **`palmerpenguins `** package&lt;sup&gt;1&lt;/sup&gt;
-
-- We use the function `read.csv()` to import the file into a data.frame called `penguins`
-
-
-```r
-penguins &lt;- read.csv('data/penguins.csv')
-```
-
-.footnote[
-[1] We are using an exported file for sake of example.
-]
-
---
-
-
-```r
-str(penguins)
-```
-
-```
-#&gt; 'data.frame':	344 obs. of  8 variables:
-#&gt;  $ species          : chr  "Adelie" "Adelie" "Adelie" "Adelie" ...
-#&gt;  $ island           : chr  "Torgersen" "Torgersen" "Torgersen" "Torgersen" ...
-#&gt;  $ bill_length_mm   : num  39.1 39.5 40.3 NA 36.7 39.3 38.9 39.2 34.1 42 ...
-#&gt;  $ bill_depth_mm    : num  18.7 17.4 18 NA 19.3 20.6 17.8 19.6 18.1 20.2 ...
-#&gt;  $ flipper_length_mm: int  181 186 195 NA 193 190 181 195 193 190 ...
-#&gt;  $ body_mass_g      : int  3750 3800 3250 NA 3450 3650 3625 4675 3475 4250 ...
-#&gt;  $ sex              : chr  "male" "female" "female" NA ...
-#&gt;  $ year             : int  2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...
-```
-
-
-
----
-
-# What will we visualise?
-
-Display the relationship between **flipper lengths** and **body masses**, taking into consideration the **species** of penguin.
-
-
-```r
-head(penguins)
-```
-
-```
-#&gt;   species    island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g    sex year
-#&gt; 1  Adelie Torgersen           39.1          18.7               181        3750   male 2007
-#&gt; 2  Adelie Torgersen           39.5          17.4               186        3800 female 2007
-#&gt; 3  Adelie Torgersen           40.3          18.0               195        3250 female 2007
-#&gt; 4  Adelie Torgersen             NA            NA                NA          NA   &lt;NA&gt; 2007
-#&gt; 5  Adelie Torgersen           36.7          19.3               193        3450 female 2007
-#&gt; 6  Adelie Torgersen           39.3          20.6               190        3650   male 2007
-```
-
----
-
-# How ggplot2 works - build by layers
-
-Start with `ggplot()` ... add **data**, map **aesthetics** ... add **layers** using `+` (plus symbol)&lt;sup&gt;1&lt;/sup&gt;
-
-- **Aesthetics**: What variables of the data to use map to visual properties
-- **Geom**: What geometrical object represents the data 
-- **Annotations**: Text annotations such as titles
-
-
-```r
-ggplot(
-  # data, aesthetics
-  data = penguins,
-  mapping = aes(x = flipper_length_mm, y = body_mass_g, color = species)
-  ) +
-  # geom layers
-  geom_point() +
-  geom_smooth(method = 'lm', se = FALSE) +
-  # annotations
-  labs(title="Body mass and flipper length", x="Flipper length (mm)", y ="Body mass (g)")
-```
-
-.footnote[
-[1] We are **chaining** together functions to add layers
-]
-
----
-
-# ggplot() with the data layer
-
-.pull-left[
-
-```r
-gglot(penguins)
-```
-]
-
-.pull-right[
-&lt;img src="01-Module-1_files/figure-html/unnamed-chunk-154-1.png" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-# Axes asthetics
-
-.pull-left[
-
-```r
-ggplot(
-  data = penguins,
-* mapping = aes(x = flipper_length_mm,
-*               y = body_mass_g)
-  ) 
-```
-]
-
-.pull-right[
-&lt;img src="01-Module-1_files/figure-html/unnamed-chunk-156-1.png" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-# Adding a point geom
-
-.pull-left[
-
-```r
-ggplot(
-  data = penguins,
-  mapping = aes(x = flipper_length_mm, 
-                y = body_mass_g)) +
-* geom_point()
-```
-]
-
-.pull-right[
-&lt;img src="01-Module-1_files/figure-html/unnamed-chunk-158-1.png" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-# Color points by species using asthetics
-
-.pull-left[
-
-```r
-ggplot(
-  data = penguins,
-  mapping = aes(x = flipper_length_mm, 
-                y = body_mass_g,
-*               color = species)) +
-  geom_point()
-```
-]
-
-.pull-right[
-&lt;img src="01-Module-1_files/figure-html/unnamed-chunk-160-1.png" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-# Add linear regression lines geom
-
-.pull-left[
-
-```r
-ggplot(
-  data = penguins,
-  mapping = aes(x = flipper_length_mm, 
-                y = body_mass_g,
-                color = species)) +
-  geom_point() +
-* geom_smooth(method = 'lm', se = FALSE)
-```
-]
-
-.pull-right[
-&lt;img src="01-Module-1_files/figure-html/unnamed-chunk-162-1.png" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-# Titles and labels
-
-.pull-left[
-
-```r
-ggplot(
-  data = penguins,
-  mapping = aes(x = flipper_length_mm, 
-                y = body_mass_g,
-                color = species)) +
-  geom_point() +
-  geom_smooth(method = 'lm', se = FALSE) +
-* labs(
-*   title = "Body mass and flipper length",
-*   subtitle = "Dimensions for Adeli ...",
-*   x = "Flipper length (mm)",
-*   y = "Body mass (g)",
-*   color = "Species",
-*   shape = "Species"
-* )
-```
-]
-
-.pull-right[
-&lt;img src="01-Module-1_files/figure-html/unnamed-chunk-164-1.png" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-# Exporting the plot
-
-With the final plot in the Plot viewer of RStudio, we use
-
-
-```r
-ggsave(filename = 'my-first-plot.png',
-       plot = last_plot(),
-       width = 18, 
-       height = 15, 
-       units = 'cm')
-```
-
-&lt;/br&gt;
-
-The file type `.png` is termed the **device**, and can be many e.g. `.pdf`, `.tiff`
-`.bmp`, etc.
-
----
-
-
-class: center, middle, inverse
-
-# Let's build a visualisation!
-
-.section-subtitle[
-
-Open the file
-
-.inverse[`M01-04-ggplot2-visualisation.R`]
-
-and attempt to do the exercises.
-
-We will discuss them shortly
+and we will discuss them together.
 
 
 ]

@@ -38,6 +38,25 @@ class: middle
 
 ---
 
+class: center, middle, inverse
+
+# Before we begin
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M02-01-importing-data.R`]
+
+and we will refer to the exercises 
+
+during the lecture
+
+
+]
+
+---
+
 # Overview
 
 
@@ -64,7 +83,7 @@ Typically a new **data frame** object in R from a **file** on your computer or f
 
 
 ```r
-penguins &lt;- read.csv(file = '../student-material/data/penguins.csv')
+penguins &lt;- read.csv(file = 'data/penguins.csv')
 ```
 
 --
@@ -127,32 +146,16 @@ but we will use the package  **`readr`**
 
 ---
 
-# Importing with the **`readr`** package
+# Importing a CSV file with readr
 
-The goal of readr is to provide a fast and friendly way to read rectangular data from delimited files, such as comma-separated values (CSV) and tab-separated values (TSV).
-
-It is designed to parse many types of data found in the wild, while **providing an informative problem report when parsing leads to unexpected results.**
-
-&lt;/br&gt;
-
-Part of the core tidyverse
+The **`readr`** improves importing text files into R.
 
 
 ```r
-# readr is loaded with
-library(tidyverse)
-# individually
 library(readr)
 ```
 
-
-.footnote[
-https://readr.tidyverse.org/
-]
-
----
-
-# Importing a CSV file
+--
 
 `read_csv()` takes
 
@@ -162,8 +165,15 @@ https://readr.tidyverse.org/
 
 
 ```r
-students &lt;- read_csv(file = "../student-material/data/students.csv")
+students &lt;- read_csv(file = "data/students.csv")
 ```
+
+.footnote[
+[1] File paths are a location on your computer. Often a difficulty for beginners to understand, we will examine in exercises.
+]
+
+--
+
 
 ```
 #&gt; Rows: 6 Columns: 5
@@ -176,15 +186,13 @@ students &lt;- read_csv(file = "../student-material/data/students.csv")
 #&gt; ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
-.footnote[
-[1] File paths are a location on your computer. Often a difficulty for beginners to understand ...
-]
+
 
 ---
 
 # a **tibble** data.frame
 
-A **tibble** is an improved data.frame from the tidyverse 
+A **tibble** is an improved type data.frame
 
  - it functions as data.frame but has better properties
  - an prints better to the console
@@ -211,37 +219,15 @@ https://tibble.tidyverse.org/
 ]
 
 ---
+class: middle, inverse
 
-# Another way to inspect the data - `glimpse()`
+# Let's import a CSV file
 
-Can view more columns than printing a data.frame to the console. Important when there are many columns
+---
 
-Examine
+class: middle
 
- - The number of rows and columns
- - Column types
- - Values look correct 
-
-
-```r
-dplyr::glimpse(students)
-```
-
-```
-#&gt; Rows: 6
-#&gt; Columns: 5
-#&gt; $ `Student ID`   &lt;dbl&gt; 1, 2, 3, 4, 5, 6
-#&gt; $ `Full Name`    &lt;chr&gt; "Sunil Huffmann", "Barclay Lynn", "Jayendra Lyne", "Leon Rossini", "…
-#&gt; $ favourite.food &lt;chr&gt; "Strawberry yoghurt", "French fries", "N/A", "Anchovies", "Pizza", "…
-#&gt; $ mealPlan       &lt;chr&gt; "Lunch only", "Lunch only", "Breakfast and lunch", "Lunch only", "Br…
-#&gt; $ AGE            &lt;chr&gt; "4", "5", "7", NA, "five", "6"
-```
-
-
-
-.footnote[
- We will look at `dplyr` shortly
-]
+# Controlling data import
 
 ---
 
@@ -250,6 +236,13 @@ dplyr::glimpse(students)
 Missing values are often coded differently in raw data e.g. `N/A`, `""`
 
 - may be imported as text and not an R missing value `NA`
+
+
+```r
+students &lt;- read_csv(file = "data/students.csv")
+```
+
+--
 
 
 ```
@@ -277,9 +270,11 @@ Can address this with the `na` argument
 
 
 ```r
-students &lt;- read_csv(file = "../student-material/data/students.csv", na = c('N/A', ''))
+students &lt;- read_csv(file = "data/students.csv", na = c('N/A', ''))
 ```
 
+--
+ 
 
 ```
 #&gt; # A tibble: 6 × 5
@@ -364,7 +359,7 @@ read_csv('file.csv', comment = "#")
 Sometimes the files have no column names, or they given elsewhere
 
 - `col_names = FALSE` 
-- `col_names = c(...)` - to provide them
+- `col_names = c(...)` allows you to provide them
 
 
 File
@@ -416,64 +411,6 @@ read_csv('file.csv',
 ]
 
 --
-
----
-
-# Controlling import - column types
-
-Dates and date times have numerous formats: `YYYY-MM-DD`, `DD/MM/YYYY`, `MM/DD/YYYY`
-
-.pull-left[
-File
-
-```
-date1,date2
-01/01/2024,2024-01-01
-02/01/2024,2024-01-02
-03/01/2024,2024-01-03
-```
-]
-
---
-
-.pull-right[
-
-R 
-
-
-```r
-read_csv('file.csv')
-```
-
-
-```
-#&gt; # A tibble: 3 × 2
-#&gt;   date1      date2     
-#&gt;   &lt;chr&gt;      &lt;date&gt;    
-#&gt; 1 01/01/2024 2024-01-01
-#&gt; 2 02/01/2024 2024-01-02
-#&gt; 3 03/01/2024 2024-01-03
-```
-]
-
---
-
-
-```r
-read_csv('file.csv', col_types = cols(date1 = col_date(format = '%d/%m/%Y')))
-```
-
-
-```
-#&gt; # A tibble: 3 × 2
-#&gt;   date1      date2     
-#&gt;   &lt;date&gt;     &lt;date&gt;    
-#&gt; 1 2024-01-01 2024-01-01
-#&gt; 2 2024-01-02 2024-01-02
-#&gt; 3 2024-01-03 2024-01-03
-```
-
-
 
 ---
 
@@ -541,6 +478,17 @@ x|y|z
 and others ...
 
 ---
+class: middle, inverse
+
+# Let's control data import
+
+---
+
+class: middle
+
+# Importing Excel data
+
+---
 
 # Importing Excel sheets with **`readxl`**
 
@@ -548,7 +496,6 @@ The **`readxl`** package makes it easy to get data out of Excel and into R.
 
 
 ```r
-# Downloaded with tidyverse, but not loaded with library(tidyverse), must use:
 library(readxl)
 ```
 
@@ -556,7 +503,7 @@ library(readxl)
 
 
 ```r
-read_excel(path = '../student-material/data/penguins.xlsx', sheet = 'Adelie')
+read_excel(path = 'data/penguins.xlsx', sheet = 'Adelie')
 ```
 
 --
@@ -586,7 +533,7 @@ This is useful to help with identifying what sheet to import
 
 
 ```r
-excel_sheets(path = '../student-material/data/penguins.xlsx')
+excel_sheets(path = 'data/penguins.xlsx')
 ```
 
 ```
@@ -620,7 +567,7 @@ We can define excel type ranges with the `range` argument
 
 
 ```r
-read_excel(path = '../student-material/data/penguins.xlsx', sheet = 'Gentoo', 
+read_excel(path = 'data/penguins.xlsx', sheet = 'Gentoo', 
 *          range = "A1:D4")
 ```
 
@@ -646,8 +593,7 @@ From R
 
 
 ```r
-fish &lt;-
-  readr::read_rds("../student-material/data/fish-lengths.rds")
+fish &lt;- readr::read_rds("data/fish-lengths.rds")
 ```
 &lt;br&gt;
 --
@@ -664,6 +610,12 @@ haven::read_spss()
 .footnote[
 https://haven.tidyverse.org/
 ]
+
+---
+
+class: middle, inverse
+
+# Let's import some Excel and other files
 
 ---
 
@@ -719,30 +671,31 @@ Prepare your data in a **tidy** format **before** using R
 Broman, K. W., &amp; Woo, K. H. (2018). Data Organization in Spreadsheets. The American Statistician, 72(1), 2–10. https://doi.org/10.1080/00031305.2017.1375989
 ]
 
----
-
-class: center, middle, inverse
-
-# Exercise time!
-
-.section-subtitle[
-
-Open the file
-
-.inverse[`M02-01-importing-data.R`]
-
-and attempt to do the exercises.
-
-We will discuss them shortly
-
-
-]
 
 ---
 
 class: middle
 
 # Your data is in R, now what?
+
+---
+
+class: center, middle, inverse
+
+# Before we begin
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M02-02-dplyr-rows.R`]
+
+and we will refer to the exercises 
+
+during the lecture
+
+
+]
 
 ---
 
@@ -775,17 +728,18 @@ library(dplyr)
 ```
 
 
-
-
 ---
 
-# **`dplyr`** basics
+# All the verbs work the same
 
 1. The first argument is always a data frame.
 
 2. The subsequent arguments typically describe which columns to operate on, using the variable names (without quotes).
 
 3. The output is always a new data frame.
+
+&lt;br&gt;
+&lt;br&gt;
 
 &lt;style type="text/css"&gt;
 .grey {
@@ -829,81 +783,86 @@ background-color: red;
 .center[.content-box-grey[dplyr function] .content-box-blue[data frame to transform] .content-box-red[arguments of function]]
 &lt;/br&gt;
 
+
+---
+
+# **`dplyr`** helps reduce typing
+
+E.g filter rows where values in column `year` are equal to 2013
+
+.pull-left[
+**dplyr**
+
+```r
+filter(data, year == 2013)
+```
+]
+
+.pull-right[
+**indexing**
+
+```r
+data[ data$year == 2013,]
+```
+]
+
+&lt;br&gt;
+&lt;br&gt;
+
 --
 
-Filter rows of `flight` where values in column `year` are equal to 2013
+
+And introduces the **pipe operator** `%&gt;%`
+
+.pull-left[
 
 
 ```r
-filter(flights, year == 2013)
+data %&gt;% 
+  filter(year == 2013) %&gt;% 
+  select(col1, col2)
 ```
+
+]
+
+.pull-right[
+
+
+```r
+data[ data$year == 2013, c('col1', 'col2')]
+```
+]
+
+---
+
+# Counting different values in a column - count() 
+
+This function is super useful for exploring datasets
+
+ - identify any data issues
+ - identify values in one or multiple columns
 
 --
 
-&lt;br&gt;
 
-We typically **chain** together multiple **`dplyr`** steps
+```r
+iris %&gt;% 
+  count(Species)
+```
+
+```
+#&gt;      Species  n
+#&gt; 1     setosa 50
+#&gt; 2 versicolor 50
+#&gt; 3  virginica 50
+```
 
 
 ---
 
-# The pipe operator: `%&gt;%`
+class: middle, inverse
 
-The **pipe operator&lt;sup&gt;1&lt;/sup&gt;** combines multiple operations into a single sequential chain of actions&lt;sup&gt;2&lt;/sup&gt;, and is included with **`dplyr`** and the **`tidyverse`**.
-
-.pull-right[
-.footnote[
-[1] R as a native pipe operator `|&gt;` but we will be using `%&gt;%`  
-[2] Like the `+` with **`ggplot2`**  
-[3] Keyboard shortcut: **Ctrl/Cmd + Shift + m**    
-]
-]
-
---
-
-Suppose we have data.frame `x` and we want to: select columns &gt; filter the rows &gt; re-arrange the data.
-
---
-
-.pull-left[
-
-Traditional usage
-
-
-```r
-# Lots of assignment
-result &lt;- select(x)
-result &lt;- filter(result)
-result &lt;- arrange(result)
-
-# Inside-out
-result &lt;-
-  arrange(
-    filter(
-      select(x)
-    )
-  )
-```
-
-]
-
---
-
-.pull-right[
-
-With pipe&lt;sup&gt;3&lt;/sup&gt; - the code and intention readable
-
-
-```r
-# Top to bottom
-result &lt;-
-  x %&gt;% 
-  select() %&gt;% 
-  filter() %&gt;% 
-  arrange()
-```
-
-]
+# Let's try some dplyr and the pipe
 
 ---
 
@@ -940,63 +899,6 @@ flights
 #&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
 #&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
 ```
-
----
-
-# A useful function before we move on - `count()` 
-
-This function is super useful for exploring datasets
-
- - identify any data issues
- - identify values in one or multiple columns
- - often pipe to `print(n = Inf)` to see all values
-
---
-
-.pull-left[
-
-```r
-flights %&gt;% 
-  count(origin)
-```
-
-```
-#&gt; # A tibble: 3 × 2
-#&gt;   origin      n
-#&gt;   &lt;chr&gt;   &lt;int&gt;
-#&gt; 1 EWR    120835
-#&gt; 2 JFK    111279
-#&gt; 3 LGA    104662
-```
-]
-
---
-
-.pull-right[
-
-```r
-flights %&gt;% 
-  count(origin, dest) # %&gt;% print(n = Inf)
-```
-
-```
-#&gt; # A tibble: 224 × 3
-#&gt;    origin dest      n
-#&gt;    &lt;chr&gt;  &lt;chr&gt; &lt;int&gt;
-#&gt;  1 EWR    ALB     439
-#&gt;  2 EWR    ANC       8
-#&gt;  3 EWR    ATL    5022
-#&gt;  4 EWR    AUS     968
-#&gt;  5 EWR    AVL     265
-#&gt;  6 EWR    BDL     443
-#&gt;  7 EWR    BNA    2336
-#&gt;  8 EWR    BOS    5327
-#&gt;  9 EWR    BQN     297
-#&gt; 10 EWR    BTV     931
-#&gt; 11 EWR    BUF     973
-#&gt; # ℹ 213 more rows
-```
-]
 
 ---
 
@@ -1231,11 +1133,10 @@ class: center, middle, inverse
 
 .section-subtitle[
 
-Open the file
+Complete the remaining exercises in
 
 .inverse[`M02-02-dplyr-rows.R`]
 
-and attempt to do the exercises.
 
 We will discuss them shortly
 
@@ -2291,11 +2192,11 @@ persons
 
 ```
 #&gt;   person age       hospital
-#&gt; 1      A  20 North Hospital
-#&gt; 2      B  42        Missing
-#&gt; 3      C  37     St. Mark's
-#&gt; 4      D  34  Port Hospital
-#&gt; 5      E  29       Military
+#&gt; 1      A  21 North Hospital
+#&gt; 2      B  37        Missing
+#&gt; 3      C  32     St. Mark's
+#&gt; 4      D  45  Port Hospital
+#&gt; 5      E  19       Military
 ```
 
 ]
@@ -2328,11 +2229,11 @@ persons %&gt;%
 
 ```
 #&gt;   person age       hospital address
-#&gt; 1      A  20 North Hospital     ...
-#&gt; 2      B  42        Missing    &lt;NA&gt;
-*#&gt; 3      C  37     St. Mark's    &lt;NA&gt;
-#&gt; 4      D  34  Port Hospital     ...
-*#&gt; 5      E  29       Military    &lt;NA&gt;
+#&gt; 1      A  21 North Hospital     ...
+#&gt; 2      B  37        Missing    &lt;NA&gt;
+*#&gt; 3      C  32     St. Mark's    &lt;NA&gt;
+#&gt; 4      D  45  Port Hospital     ...
+*#&gt; 5      E  19       Military    &lt;NA&gt;
 ```
 
 ---
@@ -2350,10 +2251,10 @@ persons
 
 ```
 #&gt;   person age
-#&gt; 1      A  19
-#&gt; 2      B  29
-#&gt; 3      C  28
-#&gt; 4      E  20
+#&gt; 1      A  42
+#&gt; 2      B  28
+#&gt; 3      C  27
+#&gt; 4      E  26
 ```
 
 ]
@@ -2386,9 +2287,9 @@ persons %&gt;%
 
 ```
 #&gt;   person age amount
-#&gt; 1      A  19     $5
-#&gt; 2      B  29    $10
-#&gt; 3      C  28     $8
+#&gt; 1      A  42     $5
+#&gt; 2      B  28    $10
+#&gt; 3      C  27     $8
 ```
 ]
 
@@ -2403,10 +2304,10 @@ persons %&gt;%
 
 ```
 #&gt;   person age amount
-#&gt; 1      A  19     $5
-#&gt; 2      B  29    $10
-#&gt; 3      C  28     $8
-#&gt; 4      E  20   &lt;NA&gt;
+#&gt; 1      A  42     $5
+#&gt; 2      B  28    $10
+#&gt; 3      C  27     $8
+#&gt; 4      E  26   &lt;NA&gt;
 #&gt; 5      D  NA     $4
 ```
 ]
@@ -2460,12 +2361,12 @@ gene_data
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     5     5    14     5    10
-#&gt; 2 A         2     3     6    11     6     2
-#&gt; 3 A         3     3     3     7    11     9
-#&gt; 4 B         1     4     8     7     7    12
-#&gt; 5 B         2     6    10     8     5    11
-#&gt; 6 B         3    11     4     8     5     9
+#&gt; 1 A         1     5     3     3    10    12
+#&gt; 2 A         2     4     3     5     5     8
+#&gt; 3 A         3     6     7    10     6    15
+#&gt; 4 B         1     6     5     9     8     6
+#&gt; 5 B         2     9     4    10     7     5
+#&gt; 6 B         3     4     4     5     7    13
 ```
 
 ]
@@ -2488,18 +2389,18 @@ gene_data_long
 #&gt;    Trt     Rep Gene  Count
 #&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
 #&gt;  1 A         1 Gene1     5
-#&gt;  2 A         1 Gene2     5
-#&gt;  3 A         1 Gene3    14
-#&gt;  4 A         1 Gene4     5
-#&gt;  5 A         1 Gene5    10
-#&gt;  6 A         2 Gene1     3
-#&gt;  7 A         2 Gene2     6
-#&gt;  8 A         2 Gene3    11
-#&gt;  9 A         2 Gene4     6
-#&gt; 10 A         2 Gene5     2
-#&gt; 11 A         3 Gene1     3
-#&gt; 12 A         3 Gene2     3
-#&gt; 13 A         3 Gene3     7
+#&gt;  2 A         1 Gene2     3
+#&gt;  3 A         1 Gene3     3
+#&gt;  4 A         1 Gene4    10
+#&gt;  5 A         1 Gene5    12
+#&gt;  6 A         2 Gene1     4
+#&gt;  7 A         2 Gene2     3
+#&gt;  8 A         2 Gene3     5
+#&gt;  9 A         2 Gene4     5
+#&gt; 10 A         2 Gene5     8
+#&gt; 11 A         3 Gene1     6
+#&gt; 12 A         3 Gene2     7
+#&gt; 13 A         3 Gene3    10
 #&gt; # ℹ 17 more rows
 ```
 
@@ -2520,12 +2421,12 @@ gene_data
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     5     5    14     5    10
-#&gt; 2 A         2     3     6    11     6     2
-#&gt; 3 A         3     3     3     7    11     9
-#&gt; 4 B         1     4     8     7     7    12
-#&gt; 5 B         2     6    10     8     5    11
-#&gt; 6 B         3    11     4     8     5     9
+#&gt; 1 A         1     5     3     3    10    12
+#&gt; 2 A         2     4     3     5     5     8
+#&gt; 3 A         3     6     7    10     6    15
+#&gt; 4 B         1     6     5     9     8     6
+#&gt; 5 B         2     9     4    10     7     5
+#&gt; 6 B         3     4     4     5     7    13
 ```
 
 --
@@ -2578,12 +2479,12 @@ gene_data
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     5     5    14     5    10
-#&gt; 2 A         2     3     6    11     6     2
-#&gt; 3 A         3     3     3     7    11     9
-#&gt; 4 B         1     4     8     7     7    12
-#&gt; 5 B         2     6    10     8     5    11
-#&gt; 6 B         3    11     4     8     5     9
+#&gt; 1 A         1     5     3     3    10    12
+#&gt; 2 A         2     4     3     5     5     8
+#&gt; 3 A         3     6     7    10     6    15
+#&gt; 4 B         1     6     5     9     8     6
+#&gt; 5 B         2     9     4    10     7     5
+#&gt; 6 B         3     4     4     5     7    13
 ```
 
 ]
@@ -2607,16 +2508,16 @@ gene_data %&gt;%
 #&gt;    Trt     Rep Gene  Count
 #&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
 #&gt;  1 A         1 Gene1     5
-#&gt;  2 A         1 Gene2     5
-#&gt;  3 A         1 Gene3    14
-#&gt;  4 A         1 Gene4     5
-#&gt;  5 A         1 Gene5    10
-#&gt;  6 A         2 Gene1     3
-#&gt;  7 A         2 Gene2     6
-#&gt;  8 A         2 Gene3    11
-#&gt;  9 A         2 Gene4     6
-#&gt; 10 A         2 Gene5     2
-#&gt; 11 A         3 Gene1     3
+#&gt;  2 A         1 Gene2     3
+#&gt;  3 A         1 Gene3     3
+#&gt;  4 A         1 Gene4    10
+#&gt;  5 A         1 Gene5    12
+#&gt;  6 A         2 Gene1     4
+#&gt;  7 A         2 Gene2     3
+#&gt;  8 A         2 Gene3     5
+#&gt;  9 A         2 Gene4     5
+#&gt; 10 A         2 Gene5     8
+#&gt; 11 A         3 Gene1     6
 #&gt; # ℹ 19 more rows
 ```
 ]
@@ -2640,16 +2541,16 @@ gene_data %&gt;%
 #&gt; # A tibble: 10 × 3
 #&gt;    Trt   Gene  mean_Count
 #&gt;    &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt;
-#&gt;  1 A     Gene1       3.67
-#&gt;  2 A     Gene2       4.67
-#&gt;  3 A     Gene3      10.7 
-#&gt;  4 A     Gene4       7.33
-#&gt;  5 A     Gene5       7   
-#&gt;  6 B     Gene1       7   
-#&gt;  7 B     Gene2       7.33
-#&gt;  8 B     Gene3       7.67
-#&gt;  9 B     Gene4       5.67
-#&gt; 10 B     Gene5      10.7
+#&gt;  1 A     Gene1       5   
+#&gt;  2 A     Gene2       4.33
+#&gt;  3 A     Gene3       6   
+#&gt;  4 A     Gene4       7   
+#&gt;  5 A     Gene5      11.7 
+#&gt;  6 B     Gene1       6.33
+#&gt;  7 B     Gene2       4.33
+#&gt;  8 B     Gene3       8   
+#&gt;  9 B     Gene4       7.33
+#&gt; 10 B     Gene5       8
 ```
 
 ---
@@ -2669,16 +2570,16 @@ gene_data_long
 #&gt;    Trt     Rep Gene  Count
 #&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
 #&gt;  1 A         1 Gene1     5
-#&gt;  2 A         1 Gene2     5
-#&gt;  3 A         1 Gene3    14
-#&gt;  4 A         1 Gene4     5
-#&gt;  5 A         1 Gene5    10
-#&gt;  6 A         2 Gene1     3
-#&gt;  7 A         2 Gene2     6
-#&gt;  8 A         2 Gene3    11
-#&gt;  9 A         2 Gene4     6
-#&gt; 10 A         2 Gene5     2
-#&gt; 11 A         3 Gene1     3
+#&gt;  2 A         1 Gene2     3
+#&gt;  3 A         1 Gene3     3
+#&gt;  4 A         1 Gene4    10
+#&gt;  5 A         1 Gene5    12
+#&gt;  6 A         2 Gene1     4
+#&gt;  7 A         2 Gene2     3
+#&gt;  8 A         2 Gene3     5
+#&gt;  9 A         2 Gene4     5
+#&gt; 10 A         2 Gene5     8
+#&gt; 11 A         3 Gene1     6
 #&gt; # ℹ 19 more rows
 ```
 
@@ -2698,12 +2599,12 @@ gene_data_long %&gt;%
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     5     5    14     5    10
-#&gt; 2 A         2     3     6    11     6     2
-#&gt; 3 A         3     3     3     7    11     9
-#&gt; 4 B         1     4     8     7     7    12
-#&gt; 5 B         2     6    10     8     5    11
-#&gt; 6 B         3    11     4     8     5     9
+#&gt; 1 A         1     5     3     3    10    12
+#&gt; 2 A         2     4     3     5     5     8
+#&gt; 3 A         3     6     7    10     6    15
+#&gt; 4 B         1     6     5     9     8     6
+#&gt; 5 B         2     9     4    10     7     5
+#&gt; 6 B         3     4     4     5     7    13
 ```
 ]
 
@@ -2727,17 +2628,17 @@ gene_data_long
 #&gt; # A tibble: 28 × 4
 #&gt;    Trt     Rep Gene  Count
 #&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
-*#&gt;  1 A         1 Gene2     5
-#&gt;  2 A         1 Gene3    14
-#&gt;  3 A         1 Gene4     5
-#&gt;  4 A         1 Gene5    10
-#&gt;  5 A         2 Gene1     3
-#&gt;  6 A         2 Gene2     6
-*#&gt;  7 A         2 Gene4     6
-#&gt;  8 A         2 Gene5     2
-#&gt;  9 A         3 Gene1     3
-#&gt; 10 A         3 Gene2     3
-#&gt; 11 A         3 Gene3     7
+*#&gt;  1 A         1 Gene2     3
+#&gt;  2 A         1 Gene3     3
+#&gt;  3 A         1 Gene4    10
+#&gt;  4 A         1 Gene5    12
+#&gt;  5 A         2 Gene1     4
+#&gt;  6 A         2 Gene2     3
+*#&gt;  7 A         2 Gene4     5
+#&gt;  8 A         2 Gene5     8
+#&gt;  9 A         3 Gene1     6
+#&gt; 10 A         3 Gene2     7
+#&gt; 11 A         3 Gene3    10
 #&gt; # ℹ 17 more rows
 ```
 
@@ -2757,12 +2658,12 @@ gene_data_long %&gt;%
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene2 Gene3 Gene4 Gene5 Gene1
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-*#&gt; 1 A         1     5    14     5    10    NA
-*#&gt; 2 A         2     6    NA     6     2     3
-#&gt; 3 A         3     3     7    11     9     3
-#&gt; 4 B         1     8     7     7    12     4
-#&gt; 5 B         2    10     8     5    11     6
-#&gt; 6 B         3     4     8     5     9    11
+*#&gt; 1 A         1     3     3    10    12    NA
+*#&gt; 2 A         2     3    NA     5     8     4
+#&gt; 3 A         3     7    10     6    15     6
+#&gt; 4 B         1     5     9     8     6     6
+#&gt; 5 B         2     4    10     7     5     9
+#&gt; 6 B         3     4     5     7    13     4
 ```
 ]
 
@@ -2784,12 +2685,12 @@ gene_data_long %&gt;%
 #&gt; # A tibble: 6 × 7
 #&gt;   Trt     Rep Gene2 Gene3 Gene4 Gene5 Gene1
 #&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-#&gt; 1 A         1     5    14     5    10     0
-#&gt; 2 A         2     6     0     6     2     3
-#&gt; 3 A         3     3     7    11     9     3
-#&gt; 4 B         1     8     7     7    12     4
-#&gt; 5 B         2    10     8     5    11     6
-#&gt; 6 B         3     4     8     5     9    11
+#&gt; 1 A         1     3     3    10    12     0
+#&gt; 2 A         2     3     0     5     8     4
+#&gt; 3 A         3     7    10     6    15     6
+#&gt; 4 B         1     5     9     8     6     6
+#&gt; 5 B         2     4    10     7     5     9
+#&gt; 6 B         3     4     5     7    13     4
 ```
 
 ---
