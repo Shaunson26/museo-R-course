@@ -1,0 +1,2851 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Module 2 - Data import and manipulation</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <script src="libs/header-attrs-2.26/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: middle, inverse, title
+
+
+
+# Module 2 - Data import and manipulation with tidyverse 
+
+.section-subtitle[
+
+Importing data - text, excel and other  
+Subsetting rows  
+Creating new columns  
+Summarising data  
+Joining data  
+Reshaping data  
+]
+
+
+---
+
+class: middle
+
+# Importing data
+
+---
+
+class: center, middle, inverse
+
+# Before we begin
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M02-01-importing-data.R`]
+
+and we will refer to the exercises 
+
+during the lecture
+
+
+]
+
+---
+
+# Overview
+
+
+R can import and export many file types ... but this may depend on additional R packages
+
+- text files: CSV, TSV
+- Excel spreadsheets
+- Files from other statistical programs: SAS, SPSS, Stata, ...
+- Databases
+- Online: googlesheets
+- R's own files types: `.rds` and `.Rdata`
+
+&lt;img src="images/r-import-export.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+Figure from https://epirhandbook.com/
+]
+
+---
+
+# The import result - a data.frame
+
+Typically a new **data frame** object in R from a **file** on your computer or from the internet
+
+
+```r
+penguins &lt;- read.csv(file = 'data/penguins.csv')
+```
+
+--
+
+
+```r
+# View the first 6 rows
+head(penguins)
+```
+
+```
+#&gt;   species    island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g    sex year
+#&gt; 1  Adelie Torgersen           39.1          18.7               181        3750   male 2007
+#&gt; 2  Adelie Torgersen           39.5          17.4               186        3800 female 2007
+#&gt; 3  Adelie Torgersen           40.3          18.0               195        3250 female 2007
+#&gt; 4  Adelie Torgersen             NA            NA                NA          NA   &lt;NA&gt; 2007
+#&gt; 5  Adelie Torgersen           36.7          19.3               193        3450 female 2007
+#&gt; 6  Adelie Torgersen           39.3          20.6               190        3650   male 2007
+```
+
+---
+
+
+# Text data files 
+
+Comma-separated values (CSV) text files are the most common type
+
+- Columns are separated (or delimited) by a comma `,`
+
+```
+Student ID,Full Name,favourite.food,mealPlan,AGE
+1,Sunil Huffmann,Strawberry yoghurt,Lunch only,4
+2,Barclay Lynn,French fries,Lunch only,5
+3,Jayendra Lyne,N/A,Breakfast and lunch,7
+4,Leon Rossini,Anchovies,Lunch only,
+5,Chidiegwu Dunkel,Pizza,Breakfast and lunch,five
+6,Güvenç Attila,Ice cream,Lunch only,6
+```
+
+--
+
+- but other delimiters exist:  tab = `\t`,  pipe = `|`, colon = `;`,  space = `\s`
+&lt;/br&gt;
+&lt;/br&gt;
+
+--
+
+R can import these natively using the `read.*` functions
+
+
+```r
+read.csv()
+read.delim()
+...
+```
+
+--
+
+but we will use the package  **`readr`**
+
+---
+
+# Importing a CSV file with readr
+
+The **`readr`** improves importing text files into R.
+
+
+```r
+library(readr)
+```
+
+--
+
+`read_csv()` takes
+
+- a **file path&lt;sup&gt;1&lt;/sup&gt;** as input
+- provides useful information about the import of the data
+- returns a tibble data.frame
+
+
+```r
+students &lt;- read_csv(file = "data/students.csv")
+```
+
+.footnote[
+[1] File paths are a location on your computer. Often a difficulty for beginners to understand, we will examine in exercises.
+]
+
+--
+
+
+```
+#&gt; Rows: 6 Columns: 5
+#&gt; ── Column specification ─────────────────────────────────────────────────────────────────────
+#&gt; Delimiter: ","
+#&gt; chr (4): Full Name, favourite.food, mealPlan, AGE
+#&gt; dbl (1): Student ID
+#&gt; 
+#&gt; ℹ Use `spec()` to retrieve the full column specification for this data.
+#&gt; ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+
+
+---
+
+# a **tibble** data.frame
+
+A **tibble** is an improved type data.frame
+
+ - it functions as data.frame but has better properties
+ - an prints better to the console
+
+
+```r
+students
+```
+
+```
+#&gt; # A tibble: 6 × 5
+#&gt;   `Student ID` `Full Name`      favourite.food     mealPlan            AGE  
+#&gt;          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;chr&gt;
+#&gt; 1            1 Sunil Huffmann   Strawberry yoghurt Lunch only          4    
+#&gt; 2            2 Barclay Lynn     French fries       Lunch only          5    
+#&gt; 3            3 Jayendra Lyne    N/A                Breakfast and lunch 7    
+#&gt; 4            4 Leon Rossini     Anchovies          Lunch only          &lt;NA&gt; 
+#&gt; 5            5 Chidiegwu Dunkel Pizza              Breakfast and lunch five 
+#&gt; 6            6 Güvenç Attila    Ice cream          Lunch only          6
+```
+
+.footnote[
+https://tibble.tidyverse.org/
+]
+
+---
+class: middle, inverse
+
+# Let's import a CSV file
+
+---
+
+class: middle
+
+# Controlling data import
+
+---
+
+# Controlling import - missing values
+
+Missing values are often coded differently in raw data e.g. `N/A`, `""`
+
+- may be imported as text and not an R missing value `NA`
+
+
+```r
+students &lt;- read_csv(file = "data/students.csv")
+```
+
+--
+
+
+```
+#&gt; # A tibble: 6 × 5
+#&gt;   `Student ID` `Full Name`      favourite.food     mealPlan            AGE  
+#&gt;          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;chr&gt;
+#&gt; 1            1 Sunil Huffmann   Strawberry yoghurt Lunch only          4    
+#&gt; 2            2 Barclay Lynn     French fries       Lunch only          5    
+*#&gt; 3            3 Jayendra Lyne    N/A                Breakfast and lunch 7    
+*#&gt; 4            4 Leon Rossini     Anchovies          Lunch only          &lt;NA&gt; 
+#&gt; 5            5 Chidiegwu Dunkel Pizza              Breakfast and lunch five 
+#&gt; 6            6 Güvenç Attila    Ice cream          Lunch only          6
+```
+
+
+---
+
+# Controlling import - missing values
+
+Can address this with the `na` argument
+
+- define what are missing values
+
+
+
+
+```r
+students &lt;- read_csv(file = "data/students.csv", na = c('N/A', ''))
+```
+
+--
+ 
+
+```
+#&gt; # A tibble: 6 × 5
+#&gt;   `Student ID` `Full Name`      favourite.food     mealPlan            AGE  
+#&gt;          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;chr&gt;
+#&gt; 1            1 Sunil Huffmann   Strawberry yoghurt Lunch only          4    
+#&gt; 2            2 Barclay Lynn     French fries       Lunch only          5    
+*#&gt; 3            3 Jayendra Lyne    &lt;NA&gt;               Breakfast and lunch 7    
+*#&gt; 4            4 Leon Rossini     Anchovies          Lunch only          &lt;NA&gt; 
+#&gt; 5            5 Chidiegwu Dunkel Pizza              Breakfast and lunch five 
+#&gt; 6            6 Güvenç Attila    Ice cream          Lunch only          6
+```
+
+---
+
+# Controlling import - skipping lines
+
+Data files may have metadata or comments, which can be skipped with `skip` or `comment` arguments 
+
+--
+
+.pull-left[
+
+File
+
+```
+The first line of metadata
+The second line of metadata
+x,y,z
+1,2,3"
+```
+R 
+
+```r
+read_csv('files.csv', skip = 2)
+```
+
+
+```
+#&gt; # A tibble: 1 × 3
+#&gt;       x     y     z
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     1     2     3
+```
+]
+
+--
+
+.pull-right[
+
+File
+
+```
+# A comment I want to skip
+# Another comment
+x,y,z
+1,2,3"
+```
+
+R
+
+
+```r
+read_csv('file.csv', comment = "#")
+```
+
+
+```
+#&gt; # A tibble: 1 × 3
+#&gt;       x     y     z
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     1     2     3
+```
+]
+
+--
+
+---
+
+# Controlling import - columns names
+
+Sometimes the files have no column names, or they given elsewhere
+
+- `col_names = FALSE` 
+- `col_names = c(...)` allows you to provide them
+
+
+File
+
+```
+1,2,3
+4,5,6
+7,8,9
+```
+
+--
+
+.pull-left[
+
+
+```r
+read_csv('file.csv', col_names = FALSE)
+```
+
+
+```
+#&gt; # A tibble: 3 × 3
+#&gt;      X1    X2    X3
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     1     2     3
+#&gt; 2     4     5     6
+#&gt; 3     7     8     9
+```
+]
+
+--
+
+.pull-right[
+
+```r
+read_csv('file.csv', 
+         col_names = c("x", "y", "z"))
+```
+
+
+```
+#&gt; # A tibble: 3 × 3
+#&gt;       x     y     z
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     1     2     3
+#&gt; 2     4     5     6
+#&gt; 3     7     8     9
+```
+]
+
+--
+
+---
+
+# Other text file types
+
+You may also encounter **delimiters** (separators), which **`readr`** can handle with other functions 
+
+--
+
+.pull-left[
+
+tab-separated (TSV) 
+
+
+```r
+read_tsv()
+```
+
+```
+x   y   z
+1   2   3
+4   5   6
+```
+
+
+```
+#&gt; # A tibble: 2 × 1
+#&gt;   `x   y   z`
+#&gt;   &lt;chr&gt;      
+#&gt; 1 1   2   3  
+#&gt; 2 4   5   6
+```
+
+]
+
+--
+
+.pull-right[
+
+pipe-separated or any other delimiter
+
+
+```r
+read_delim(..., delim = '|')`
+```
+
+```
+x|y|z
+1|2|3
+4|5|6
+```
+
+
+```
+#&gt; # A tibble: 2 × 3
+#&gt;       x     y     z
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     1     2     3
+#&gt; 2     4     5     6
+```
+]
+
+--
+
+and others ...
+
+---
+class: middle, inverse
+
+# Let's control data import
+
+---
+
+class: middle
+
+# Importing Excel data
+
+---
+
+# Importing Excel sheets with **`readxl`**
+
+The **`readxl`** package makes it easy to get data out of Excel and into R. 
+
+
+```r
+library(readxl)
+```
+
+--
+
+
+```r
+read_excel(path = 'data/penguins.xlsx', sheet = 'Adelie')
+```
+
+--
+
+
+```
+#&gt; # A tibble: 6 × 8
+#&gt;   species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g sex     year
+#&gt;   &lt;chr&gt;   &lt;chr&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;
+#&gt; 1 Adelie  Torgersen           39.1          18.7               181        3750 male    2007
+#&gt; 2 Adelie  Torgersen           39.5          17.4               186        3800 female  2007
+#&gt; 3 Adelie  Torgersen           40.3          18                 195        3250 female  2007
+#&gt; 4 Adelie  Torgersen           NA            NA                  NA          NA &lt;NA&gt;    2007
+#&gt; 5 Adelie  Torgersen           36.7          19.3               193        3450 female  2007
+#&gt; 6 Adelie  Torgersen           39.3          20.6               190        3650 male    2007
+```
+
+.footnote[
+https://readxl.tidyverse.org/
+]
+
+---
+
+# Listing sheets in an excel file
+
+This is useful to help with identifying what sheet to import
+
+
+```r
+excel_sheets(path = 'data/penguins.xlsx')
+```
+
+```
+#&gt; [1] "Adelie"    "Gentoo"    "Chinstrap"
+```
+
+
+---
+
+# Controlling import - missing values and skipping rows
+
+As with other **`readr`** functions
+
+
+```r
+# Define missing value characters
+read_excel(..., na = c('Missing', '', 'N/A'))
+```
+
+
+```r
+# Skip first 2 rows
+read_excel(..., skip = 2)
+```
+
+---
+
+# Controlling import - cell ranges
+
+We can define excel type ranges with the `range` argument
+
+
+```r
+read_excel(path = 'data/penguins.xlsx', sheet = 'Gentoo', 
+*          range = "A1:D4")
+```
+
+```
+#&gt; # A tibble: 3 × 4
+#&gt;   species island bill_length_mm bill_depth_mm
+#&gt;   &lt;chr&gt;   &lt;chr&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+#&gt; 1 Gentoo  Biscoe           46.1          13.2
+#&gt; 2 Gentoo  Biscoe           50            16.3
+#&gt; 3 Gentoo  Biscoe           48.7          14.1
+```
+
+&lt;img src="images/readxl-cell-range.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Other data types
+
+From R
+
+ - `.rds` objects saved from R, e.g. a data.frame
+ - keeps any column formatting applied previously in R
+
+
+```r
+fish &lt;- readr::read_rds("data/fish-lengths.rds")
+```
+&lt;br&gt;
+--
+
+From statistical programs using **`haven`** from the tidyverse
+
+
+```r
+haven::read_sas()
+haven::read_dta()
+haven::read_spss()
+```
+
+.footnote[
+https://haven.tidyverse.org/
+]
+
+---
+
+class: middle, inverse
+
+# Let's import some Excel and other files
+
+---
+
+class: middle
+
+# A note on data organisation in spreadsheets
+
+---
+
+# Spreadsheets often organised for humans not computers
+
+This create immenses difficulties for data import!
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="images/messy-spreadsheet.png" alt="Spreadsheet organised for human not computer" width="65%" /&gt;
+&lt;p class="caption"&gt;Spreadsheet organised for human not computer&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+# Data Organization in Spreadsheets&lt;sup&gt;1&lt;/sup&gt;
+
+For **better data organisation**, the basic principles are:
+
+- organize the data as a single rectangle 
+- observations as rows, variables as columns, and a single header row
+- do not include calculations in the raw data files
+- do not use font color or highlighting as data
+- put just one thing in a cell, 
+- do not leave any cells empty, 
+- be consistent
+- write dates like YYYY-MM-DD, 
+- create a data dictionary
+- choose good names for things
+- make backups
+- use data validation to avoid data entry errors
+- save the data in plain text files
+
+
+.footnote[
+[1] Broman, K. W., &amp; Woo, K. H. (2018). Data Organization in Spreadsheets. The American Statistician, 72(1), 2–10. https://doi.org/10.1080/00031305.2017.1375989
+]
+
+---
+
+# Data Organization in Spreadsheets&lt;sup&gt;1&lt;/sup&gt;
+
+Prepare your data in a **tidy** format **before** using R
+
+&lt;img src="images/untidy-tidy-data.png" width="90%" /&gt;
+
+.footnote[
+Broman, K. W., &amp; Woo, K. H. (2018). Data Organization in Spreadsheets. The American Statistician, 72(1), 2–10. https://doi.org/10.1080/00031305.2017.1375989
+]
+
+
+---
+
+class: middle
+
+# Your data is in R, now what?
+
+---
+
+class: center, middle, inverse
+
+# Before we begin
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M02-02-dplyr-rows.R`]
+
+and we will refer to the exercises 
+
+during the lecture
+
+
+]
+
+---
+
+# Data transformation and manipulation with **`dplyr`**
+
+**`dplyr`** is a grammar of data manipulation, providing a consistent set of **verbs** that help you solve the most common data manipulation challenges:
+
+.footnote[
+https://dplyr.tidyverse.org//
+]
+
+--
+
+Some verbs include
+
+- `mutate()` adds new variables that are functions of existing variables
+- `select()` picks variables based on their names.
+- `filter()` picks cases based on their values.
+- `summarise()` reduces multiple values down to a single summary.
+- `arrange()` changes the ordering of the rows.
+
+--
+
+
+```r
+# Part of the core tidyverse, loaded with
+library(tidyverse)
+# or
+library(dplyr)
+```
+
+
+---
+
+# All the verbs work the same
+
+1. The first argument is always a data frame.
+
+2. The subsequent arguments typically describe which columns to operate on, using the variable names (without quotes).
+
+3. The output is always a new data frame.
+
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;style type="text/css"&gt;
+.grey {
+color: grey;
+}
+.blue {
+color: blue;
+}
+
+.red {
+color: red;
+}
+
+.large-font {
+font-size: 2em
+}
+
+.content-box-grey, .content-box-red, .content-box-blue {
+border-radius: 15px;
+margin: 0 0 25px;
+overflow: hidden;
+padding: 20px;
+color: white
+}
+
+.content-box-grey {
+background-color: gray;
+}
+
+.content-box-blue {
+background-color: blue;
+}
+
+.content-box-red {
+background-color: red;
+}
+&lt;/style&gt;
+
+.center[.large-font[.grey[`verb(`].blue[`data`]`,` .red[`...`] .grey[`)`]]]
+&lt;/br&gt;
+.center[.content-box-grey[dplyr function] .content-box-blue[data frame to transform] .content-box-red[arguments of function]]
+&lt;/br&gt;
+
+
+---
+
+# **`dplyr`** helps reduce typing
+
+E.g filter rows where values in column `year` are equal to 2013
+
+.pull-left[
+**dplyr**
+
+```r
+filter(data, year == 2013)
+```
+]
+
+.pull-right[
+**indexing**
+
+```r
+data[ data$year == 2013,]
+```
+]
+
+&lt;br&gt;
+&lt;br&gt;
+
+--
+
+
+And introduces the **pipe operator** `%&gt;%`
+
+.pull-left[
+
+
+```r
+data %&gt;% 
+  filter(year == 2013) %&gt;% 
+  select(col1, col2)
+```
+
+]
+
+.pull-right[
+
+
+```r
+data[ data$year == 2013, c('col1', 'col2')]
+```
+]
+
+---
+
+# Counting different values in a column - count() 
+
+This function is super useful for exploring datasets
+
+ - identify any data issues
+ - identify values in one or multiple columns
+
+--
+
+
+```r
+iris %&gt;% 
+  count(Species)
+```
+
+```
+#&gt;      Species  n
+#&gt; 1     setosa 50
+#&gt; 2 versicolor 50
+#&gt; 3  virginica 50
+```
+
+
+---
+
+class: middle, inverse
+
+# Let's try some dplyr and the pipe
+
+---
+
+# Data for the following examples
+
+The `flights` dataset from the package **`nycflights13`** which contains 19 variables of 336,776 flights that departed from New York City in 2013&lt;sup&gt;1&lt;/sup&gt;. 
+
+
+```r
+library(nycflights13)
+flights
+```
+
+.footnote[
+[1] The data comes from the US Bureau of Transportation Statistics, and is documented in ?flights.
+]
+
+
+--
+
+
+```
+#&gt; # A tibble: 336,776 × 19
+#&gt;    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt; 1  2013     1     1      517            515         2      830            819        11
+#&gt; 2  2013     1     1      533            529         4      850            830        20
+#&gt; 3  2013     1     1      542            540         2      923            850        33
+#&gt; 4  2013     1     1      544            545        -1     1004           1022       -18
+#&gt; 5  2013     1     1      554            600        -6      812            837       -25
+#&gt; 6  2013     1     1      554            558        -4      740            728        12
+#&gt; 7  2013     1     1      555            600        -5      913            854        19
+#&gt; # ℹ 336,769 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+class: middle
+
+# Functions affecting rows
+
+.section-subtitle[
+
+filter()
+
+arrange()
+
+distinct()
+]
+
+---
+
+# `filter()` subset rows
+
+&lt;style type="text/css"&gt;
+.dplyr-filter {
+position: absolute;
+top: 5%;
+right: 2%;
+width: 500px;
+}
+&lt;/style&gt;
+
+.dplyr-filter[
+![](images/filter.png)&lt;!-- --&gt;
+]
+
+
+Uses conditional selection
+
+
+
+
+```r
+flights %&gt;% 
+  filter(dep_delay &gt; 120)
+```
+
+```
+#&gt; # A tibble: 9,723 × 19
+#&gt;     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt;  1  2013     1     1      848           1835       853     1001           1950       851
+#&gt;  2  2013     1     1      957            733       144     1056            853       123
+#&gt;  3  2013     1     1     1114            900       134     1447           1222       145
+#&gt;  4  2013     1     1     1540           1338       122     2020           1825       115
+#&gt;  5  2013     1     1     1815           1325       290     2120           1542       338
+#&gt;  6  2013     1     1     1842           1422       260     1958           1535       263
+#&gt;  7  2013     1     1     1856           1645       131     2212           2005       127
+#&gt;  8  2013     1     1     1934           1725       129     2126           1855       151
+#&gt;  9  2013     1     1     1938           1703       155     2109           1823       166
+#&gt; 10  2013     1     1     1942           1705       157     2124           1830       174
+#&gt; # ℹ 9,713 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+
+---
+
+# `filter()` more examples
+
+Combining conditional selections
+
+
+```r
+# Flights that departed on January 1
+flights %&gt;% 
+  filter(month == 1 &amp; day == 1)
+```
+--
+
+```r
+# Flights that departed in January or February
+flights %&gt;% 
+  filter(month == 1 | month == 2)
+```
+--
+
+```r
+# Flights that departed in January or February using %in%
+flights %&gt;% 
+  filter(month %in% c(1,2))
+```
+--
+
+```r
+# Removing Janurary flights
+flights %&gt;% 
+  filter(month != 1)
+```
+
+---
+
+# `arrange()` arrange and sort rows
+
+On one, more multiple, columns
+
+
+```r
+flights %&gt;%  
+  arrange(year, month, day, dep_time)
+```
+
+```
+#&gt; # A tibble: 336,776 × 19
+#&gt;     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt;  1  2013     1     1      517            515         2      830            819        11
+#&gt;  2  2013     1     1      533            529         4      850            830        20
+#&gt;  3  2013     1     1      542            540         2      923            850        33
+#&gt;  4  2013     1     1      544            545        -1     1004           1022       -18
+#&gt;  5  2013     1     1      554            600        -6      812            837       -25
+#&gt;  6  2013     1     1      554            558        -4      740            728        12
+#&gt;  7  2013     1     1      555            600        -5      913            854        19
+#&gt;  8  2013     1     1      557            600        -3      709            723       -14
+#&gt;  9  2013     1     1      557            600        -3      838            846        -8
+#&gt; 10  2013     1     1      558            600        -2      753            745         8
+#&gt; # ℹ 336,766 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+# `arrange()` arrange and sort rows
+
+Default is ascending order, use `desc()` for decending
+
+
+```r
+flights %&gt;%  
+  arrange(year, desc(month), day, dep_time)
+```
+
+```
+#&gt; # A tibble: 336,776 × 19
+#&gt;     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt;  1  2013    12     1       13           2359        14      446            445         1
+#&gt;  2  2013    12     1       17           2359        18      443            437         6
+#&gt;  3  2013    12     1      453            500        -7      636            651       -15
+#&gt;  4  2013    12     1      520            515         5      749            808       -19
+#&gt;  5  2013    12     1      536            540        -4      845            850        -5
+#&gt;  6  2013    12     1      540            550       -10     1005           1027       -22
+#&gt;  7  2013    12     1      541            545        -4      734            755       -21
+#&gt;  8  2013    12     1      546            545         1      826            835        -9
+#&gt;  9  2013    12     1      549            600       -11      648            659       -11
+#&gt; 10  2013    12     1      550            600       -10      825            854       -29
+#&gt; # ℹ 336,766 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+# `distinct()` find unique values
+
+On one, more multiple, columns
+
+
+```r
+# Find all unique origin and destination pairs
+flights %&gt;% 
+  distinct(origin, dest)
+```
+
+```
+#&gt; # A tibble: 224 × 2
+#&gt;    origin dest 
+#&gt;    &lt;chr&gt;  &lt;chr&gt;
+#&gt;  1 EWR    IAH  
+#&gt;  2 LGA    IAH  
+#&gt;  3 JFK    MIA  
+#&gt;  4 JFK    BQN  
+#&gt;  5 LGA    ATL  
+#&gt;  6 EWR    ORD  
+#&gt;  7 EWR    FLL  
+#&gt;  8 LGA    IAD  
+#&gt;  9 JFK    MCO  
+#&gt; 10 LGA    ORD  
+#&gt; # ℹ 214 more rows
+```
+
+---
+
+# `distinct()` unique values, and other columns
+
+`.keep_all = TRUE` returns all other columns of the first occurrence of distinct rows
+
+
+```r
+flights %&gt;%  
+  distinct(origin, dest, .keep_all = TRUE)
+```
+
+```
+#&gt; # A tibble: 224 × 19
+#&gt;     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt;  1  2013     1     1      517            515         2      830            819        11
+#&gt;  2  2013     1     1      533            529         4      850            830        20
+#&gt;  3  2013     1     1      542            540         2      923            850        33
+#&gt;  4  2013     1     1      544            545        -1     1004           1022       -18
+#&gt;  5  2013     1     1      554            600        -6      812            837       -25
+#&gt;  6  2013     1     1      554            558        -4      740            728        12
+#&gt;  7  2013     1     1      555            600        -5      913            854        19
+#&gt;  8  2013     1     1      557            600        -3      709            723       -14
+#&gt;  9  2013     1     1      557            600        -3      838            846        -8
+#&gt; 10  2013     1     1      558            600        -2      753            745         8
+#&gt; # ℹ 214 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+class: center, middle, inverse
+
+# Exercise time!
+
+.section-subtitle[
+
+Complete the remaining exercises in
+
+.inverse[`M02-02-dplyr-rows.R`]
+
+
+We will discuss them shortly
+
+
+]
+
+---
+
+class: middle
+
+# Functions affecting columns
+
+.section-subtitle[
+
+mutate()
+
+select()
+
+]
+
+---
+
+# `mutate()` creating new columns
+
+
+&lt;style type="text/css"&gt;
+.dplyr-mutate {
+position: absolute;
+top: 5%;
+right: 2%;
+width: 450px;
+}
+&lt;/style&gt;
+
+.dplyr-mutate[
+![](images/mutate.png)&lt;!-- --&gt;
+]
+
+
+
+
+```r
+flights %&gt;% 
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .before = 1 # so they are positioned before the first column
+  )
+```
+
+```
+#&gt; # A tibble: 336,776 × 21
+#&gt;    gain speed  year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+#&gt; 1    -9  370.  2013     1     1      517            515         2      830            819
+#&gt; 2   -16  374.  2013     1     1      533            529         4      850            830
+#&gt; 3   -31  408.  2013     1     1      542            540         2      923            850
+#&gt; 4    17  517.  2013     1     1      544            545        -1     1004           1022
+#&gt; 5    19  394.  2013     1     1      554            600        -6      812            837
+#&gt; 6   -16  288.  2013     1     1      554            558        -4      740            728
+#&gt; 7   -24  404.  2013     1     1      555            600        -5      913            854
+#&gt; # ℹ 336,769 more rows
+#&gt; # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,
+#&gt; #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;,
+#&gt; #   time_hour &lt;dttm&gt;
+```
+
+---
+
+# `mutate()` for data cleaning
+
+`mutate()` is used extensively for cleaning data
+
+- update values 
+- fix word errors
+- changing data types
+
+We will use **mutate()** for detailed data cleaning later on
+
+
+```r
+students
+```
+
+```
+#&gt; # A tibble: 6 × 5
+#&gt;   `Student ID` `Full Name`      favourite.food     mealPlan            AGE  
+#&gt;          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;chr&gt;
+#&gt; 1            1 Sunil Huffmann   Strawberry yoghurt Lunch only          4    
+#&gt; 2            2 Barclay Lynn     French fries       Lunch only          5    
+#&gt; 3            3 Jayendra Lyne    &lt;NA&gt;               Breakfast and lunch 7    
+#&gt; 4            4 Leon Rossini     Anchovies          Lunch only          &lt;NA&gt; 
+#&gt; 5            5 Chidiegwu Dunkel Pizza              Breakfast and lunch five 
+#&gt; 6            6 Güvenç Attila    Ice cream          Lunch only          6
+```
+
+---
+
+# `mutate()` for data cleaning
+
+`mutate()` is used extensively for cleaning data
+
+- update values 
+- fix word errors
+- changing data types
+
+We will use **mutate()** for detailed data cleaning later on
+
+
+```r
+students %&gt;% 
+  mutate(AGE = case_when(AGE == 'five' ~ '5', .default = AGE),
+         AGE = as.numeric(AGE))
+```
+
+```
+#&gt; # A tibble: 6 × 5
+#&gt;   `Student ID` `Full Name`      favourite.food     mealPlan              AGE
+#&gt;          &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;              &lt;chr&gt;               &lt;dbl&gt;
+#&gt; 1            1 Sunil Huffmann   Strawberry yoghurt Lunch only              4
+#&gt; 2            2 Barclay Lynn     French fries       Lunch only              5
+#&gt; 3            3 Jayendra Lyne    &lt;NA&gt;               Breakfast and lunch     7
+#&gt; 4            4 Leon Rossini     Anchovies          Lunch only             NA
+#&gt; 5            5 Chidiegwu Dunkel Pizza              Breakfast and lunch     5
+#&gt; 6            6 Güvenç Attila    Ice cream          Lunch only              6
+```
+
+---
+
+# `select()` pick or remove columns by name
+
+
+.pull-left[
+
+
+```r
+flights %&gt;%  
+  select(year, month, day)
+```
+
+```
+#&gt; # A tibble: 336,776 × 3
+#&gt;    year month   day
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1  2013     1     1
+#&gt; 2  2013     1     1
+#&gt; 3  2013     1     1
+#&gt; 4  2013     1     1
+#&gt; 5  2013     1     1
+#&gt; 6  2013     1     1
+#&gt; 7  2013     1     1
+#&gt; # ℹ 336,769 more rows
+```
+
+]
+
+.pull-right[
+
+Select **all columns between** year and day (inclusive):
+
+
+```r
+flights %&gt;% 
+  select(year:day)
+```
+
+
+Select all columns **except** those from year to day (inclusive):
+
+
+```r
+flights %&gt;%  
+  select(!year:day)
+```
+
+**Rename** on selection
+
+
+```r
+flights %&gt;% 
+  select(tail_num = tailnum)
+```
+
+]
+
+---
+
+# `select()` helper functions
+
+In very large datasets, there may be repeating elements in columns names
+
+
+```
+#&gt;   PatientID Code_a Code_b Code_c Code_d Code_e Name1 Name2 Name3 Name4 Name5
+#&gt; 1         1    ...    ...    ...    ...    ...   ...   ...   ...   ...   ...
+#&gt; 2         2    ...    ...    ...    ...    ...   ...   ...   ...   ...   ...
+#&gt; 3         3    ...    ...    ...    ...    ...   ...   ...   ...   ...   ...
+```
+
+--
+
+**`dplyr`** uses select helper functions:
+
+- `starts_with("abc")`: matches names that begin with “abc”.
+- `ends_with("xyz")`: matches names that end with “xyz”.
+- `contains("ijk")`: matches names that contain “ijk”.
+- `num_range("x", 1:3)`: matches x1, x2 and x3.
+
+--
+
+
+```r
+select_example_df %&gt;% 
+  select(PatientID, starts_with("Code"))
+```
+
+```
+#&gt;   PatientID Code_a Code_b Code_c Code_d Code_e
+#&gt; 1         1    ...    ...    ...    ...    ...
+#&gt; 2         2    ...    ...    ...    ...    ...
+#&gt; 3         3    ...    ...    ...    ...    ...
+```
+
+---
+
+# Other column functions
+
+`rename()` renames columns
+
+
+```r
+flights %&gt;% 
+  #rename(new_name = old_name)
+  rename(YEAR = year)
+```
+
+```
+#&gt; # A tibble: 336,776 × 19
+#&gt;    YEAR month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt; 1  2013     1     1      517            515         2      830            819        11
+#&gt; 2  2013     1     1      533            529         4      850            830        20
+#&gt; 3  2013     1     1      542            540         2      923            850        33
+#&gt; 4  2013     1     1      544            545        -1     1004           1022       -18
+#&gt; 5  2013     1     1      554            600        -6      812            837       -25
+#&gt; 6  2013     1     1      554            558        -4      740            728        12
+#&gt; 7  2013     1     1      555            600        -5      913            854        19
+#&gt; # ℹ 336,769 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+# Other column functions
+
+`relocate()` allows you to move columns around -&gt; maybe to group similar columns
+
+
+```r
+# Move columns between year:day after dep_delay
+flights %&gt;% 
+  relocate(year:day, .after = dep_delay)
+```
+
+```
+#&gt; # A tibble: 336,776 × 19
+#&gt;   dep_time sched_dep_time dep_delay  year month   day arr_time sched_arr_time arr_delay
+#&gt;      &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt; 1      517            515         2  2013     1     1      830            819        11
+#&gt; 2      533            529         4  2013     1     1      850            830        20
+#&gt; 3      542            540         2  2013     1     1      923            850        33
+#&gt; 4      544            545        -1  2013     1     1     1004           1022       -18
+#&gt; 5      554            600        -6  2013     1     1      812            837       -25
+#&gt; 6      554            558        -4  2013     1     1      740            728        12
+#&gt; 7      555            600        -5  2013     1     1      913            854        19
+#&gt; # ℹ 336,769 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+class: center, middle, inverse
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M02-03-dplyr-columns.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+
+class: middle
+
+# Grouping and summarising data
+
+.section-subtitle[
+
+group_by()
+
+summarise()
+
+]
+
+---
+
+# `group_by` group rows 
+
+&lt;style type="text/css"&gt;
+.dplyr-group {
+position: absolute;
+top: 3%;
+right: 2%;
+width: 400px;
+}
+&lt;/style&gt;
+
+.dplyr-group[
+![](images/group_summary.png)&lt;!-- --&gt;
+]
+
+`group_by()` creates a **grouping attribute** for you data
+  - subsequent row operations are conducted by group
+  
+
+```r
+flights %&gt;% 
+  group_by(month)
+```
+--
+
+```
+#&gt; # A tibble: 336,776 × 19
+*#&gt; # Groups:   month [12]
+#&gt;    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt; 1  2013     1     1      517            515         2      830            819        11
+#&gt; 2  2013     1     1      533            529         4      850            830        20
+#&gt; 3  2013     1     1      542            540         2      923            850        33
+#&gt; 4  2013     1     1      544            545        -1     1004           1022       -18
+#&gt; 5  2013     1     1      554            600        -6      812            837       -25
+#&gt; 6  2013     1     1      554            558        -4      740            728        12
+#&gt; 7  2013     1     1      555            600        -5      913            854        19
+#&gt; # ℹ 336,769 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+# `summarise()` summarise values
+
+&lt;style type="text/css"&gt;
+.dplyr-summarise {
+position: absolute;
+top: 5%;
+right: 2%;
+width: 400px;
+}
+&lt;/style&gt;
+
+.dplyr-summarise[
+![](images/summary.png)&lt;!-- --&gt;
+]
+
+
+
+Calculates a single summary statistic .. often used with `group_by`
+
+.pull-left-66[
+
+```r
+flights %&gt;% 
+  group_by(month) %&gt;% 
+  summarise(
+    mean_dep_delay = mean(dep_delay)
+  )
+```
+
+]
+
+--
+
+.pull-right-33[
+
+```
+#&gt; # A tibble: 12 × 2
+#&gt;    month mean_dep_delay
+#&gt;    &lt;int&gt;          &lt;dbl&gt;
+#&gt;  1     1             NA
+#&gt;  2     2             NA
+#&gt;  3     3             NA
+#&gt;  4     4             NA
+#&gt;  5     5             NA
+#&gt;  6     6             NA
+#&gt;  7     7             NA
+#&gt;  8     8             NA
+#&gt;  9     9             NA
+#&gt; 10    10             NA
+#&gt; 11    11             NA
+#&gt; 12    12             NA
+```
+]
+
+--
+
+.pull-left-66[
+!! `NA` values exist in `dep_delay`, affecting the `mean()` function
+
+
+```r
+anyNA(flights$dep_delay)
+```
+
+```
+#&gt; [1] TRUE
+```
+]
+
+---
+
+# `summarise()` summarise values
+
+&lt;style type="text/css"&gt;
+.dplyr-summarise {
+position: absolute;
+top: 5%;
+right: 2%;
+width: 400px;
+}
+&lt;/style&gt;
+
+.dplyr-summarise[
+![](images/summary.png)&lt;!-- --&gt;
+]
+
+Calculates a single summary statistic .. often used with `group_by`
+
+.pull-left-66[
+
+```r
+flights %&gt;% 
+  group_by(month) %&gt;% 
+  summarise(
+    mean_dep_delay = mean(dep_delay, na.rm = TRUE)
+  )
+```
+]
+
+.pull-right-33[
+
+```
+#&gt; # A tibble: 12 × 2
+#&gt;    month mean_dep_delay
+#&gt;    &lt;int&gt;          &lt;dbl&gt;
+#&gt;  1     1          10.0 
+#&gt;  2     2          10.8 
+#&gt;  3     3          13.2 
+#&gt;  4     4          13.9 
+#&gt;  5     5          13.0 
+#&gt;  6     6          20.8 
+#&gt;  7     7          21.7 
+#&gt;  8     8          12.6 
+#&gt;  9     9           6.72
+#&gt; 10    10           6.24
+#&gt; 11    11           5.44
+#&gt; 12    12          16.6
+```
+]
+
+---
+
+# Multiple summary values
+
+Any number of summaries can be included
+ - `n()` is a dplyr function to return the number of rows in a group
+
+&lt;style type="text/css"&gt;
+.pull-left-50 { width: 51%; float: left; }
+&lt;/style&gt;
+
+.pull-left-50[
+
+```r
+flights %&gt;% 
+  group_by(month) %&gt;% 
+  summarise(
+    mean_dep_delay = mean(dep_delay, na.rm = T),
+    max_dep_delay = max(dep_delay, na.rm = T),
+    n = n()
+  )
+```
+]
+
+--
+
+.pull-right[
+
+```
+#&gt; # A tibble: 12 × 4
+#&gt;    month mean_dep_delay max_dep_delay     n
+#&gt;    &lt;int&gt;          &lt;dbl&gt;         &lt;dbl&gt; &lt;int&gt;
+#&gt;  1     1          10.0           1301 27004
+#&gt;  2     2          10.8            853 24951
+#&gt;  3     3          13.2            911 28834
+#&gt;  4     4          13.9            960 28330
+#&gt;  5     5          13.0            878 28796
+#&gt;  6     6          20.8           1137 28243
+#&gt;  7     7          21.7           1005 29425
+#&gt;  8     8          12.6            520 29327
+#&gt;  9     9           6.72          1014 27574
+#&gt; 10    10           6.24           702 28889
+#&gt; 11    11           5.44           798 27268
+#&gt; 12    12          16.6            896 28135
+```
+]
+
+---
+
+
+# Multiple `group_by()`
+
+Can create groups by multiple variables
+
+
+```r
+flights %&gt;% 
+  group_by(month, day) 
+```
+--
+
+```
+#&gt; # A tibble: 336,776 × 19
+*#&gt; # Groups:   month, day [365]
+#&gt;    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt; 1  2013     1     1      517            515         2      830            819        11
+#&gt; 2  2013     1     1      533            529         4      850            830        20
+#&gt; 3  2013     1     1      542            540         2      923            850        33
+#&gt; 4  2013     1     1      544            545        -1     1004           1022       -18
+#&gt; 5  2013     1     1      554            600        -6      812            837       -25
+#&gt; 6  2013     1     1      554            558        -4      740            728        12
+#&gt; 7  2013     1     1      555            600        -5      913            854        19
+#&gt; # ℹ 336,769 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+---
+
+# Multiple `group_by()` with `summarise()`
+
+
+
+.pull-left[
+
+```r
+flights %&gt;% 
+  group_by(month, day) %&gt;% 
+  summarise(n = n())
+```
+
+```
+#&gt; `summarise()` has grouped output by 'month'.
+#&gt; You can override using the `.groups`
+#&gt; argument.
+```
+
+```
+#&gt; # A tibble: 365 × 3
+*#&gt; # Groups:   month [12]
+#&gt;   month   day     n
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1     1     1   842
+#&gt; 2     1     2   943
+#&gt; 3     1     3   914
+#&gt; 4     1     4   915
+#&gt; 5     1     5   720
+#&gt; 6     1     6   832
+#&gt; 7     1     7   933
+#&gt; # ℹ 358 more rows
+```
+]
+
+--
+
+.pull-right[
+
+We often want to drop the groups&lt;sup&gt;1&lt;/sup&gt;
+
+
+```r
+flights %&gt;% 
+  group_by(month, day) %&gt;% 
+  summarise(n = n(), 
+            .groups = 'drop')
+```
+
+```
+#&gt; # A tibble: 365 × 3
+#&gt;   month   day     n
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1     1     1   842
+#&gt; 2     1     2   943
+#&gt; 3     1     3   914
+#&gt; 4     1     4   915
+#&gt; 5     1     5   720
+#&gt; 6     1     6   832
+#&gt; 7     1     7   933
+#&gt; # ℹ 358 more rows
+```
+
+[1] Keeping them was a design flaw
+]
+
+---
+
+# `ungroup()` removes groups
+
+
+
+You may use `group_by()` for other reasons, but remember to **remove** it
+
+
+```r
+flights %&gt;% 
+  group_by(month, day) %&gt;% 
+  # do some action %&gt;% 
+  ungroup()
+```
+
+```
+#&gt; # A tibble: 336,776 × 19
+#&gt;    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;
+#&gt; 1  2013     1     1      517            515         2      830            819        11
+#&gt; 2  2013     1     1      533            529         4      850            830        20
+#&gt; 3  2013     1     1      542            540         2      923            850        33
+#&gt; 4  2013     1     1      544            545        -1     1004           1022       -18
+#&gt; 5  2013     1     1      554            600        -6      812            837       -25
+#&gt; 6  2013     1     1      554            558        -4      740            728        12
+#&gt; 7  2013     1     1      555            600        -5      913            854        19
+#&gt; # ℹ 336,769 more rows
+#&gt; # ℹ 10 more variables: carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+#&gt; #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
+```
+
+
+---
+
+class: center, middle, inverse
+
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M02-04-dplyr-summarise.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+
+# Joining datasets
+
+
+We often have to multiple datasets and need to join them to help answer our questions.
+
+- What was the weather like on sample dates?
+
+- What is the full taxonomic lineage of the organisms in my experiment?
+
+- What are the geographic coordinates (lat/lon) for sample locations?
+
+- And any others ...
+
+
+---
+
+# **`dplyr`** joining functions
+
+&lt;img src="images/join.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+# left_join() - the most common join
+
+The primary use of `left_join()` is to add in additional metadata
+
+
+
+--
+
+
+
+.pull-left[
+
+The number of flights at each hour
+
+
+```r
+n_flights_hourly
+```
+
+```
+#&gt; # A tibble: 6,266 × 2
+#&gt;    time_hour           n_flights
+#&gt;    &lt;dttm&gt;                  &lt;int&gt;
+#&gt;  1 2013-01-01 05:00:00         2
+#&gt;  2 2013-01-01 06:00:00        18
+#&gt;  3 2013-01-01 07:00:00        12
+#&gt;  4 2013-01-01 08:00:00        20
+#&gt;  5 2013-01-01 09:00:00        19
+#&gt;  6 2013-01-01 10:00:00        18
+#&gt;  7 2013-01-01 11:00:00        11
+#&gt;  8 2013-01-01 12:00:00        22
+#&gt;  9 2013-01-01 13:00:00        28
+#&gt; 10 2013-01-01 14:00:00        18
+#&gt; # ℹ 6,256 more rows
+```
+
+]
+
+--
+
+.pull-right[
+
+Weather data at each hour
+
+
+```r
+weather_hourly
+```
+
+```
+#&gt; # A tibble: 8,703 × 3
+#&gt;    time_hour            temp humid
+#&gt;    &lt;dttm&gt;              &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 2013-01-01 01:00:00  39.0  59.4
+#&gt;  2 2013-01-01 02:00:00  39.0  61.6
+#&gt;  3 2013-01-01 03:00:00  39.0  64.4
+#&gt;  4 2013-01-01 04:00:00  39.9  62.2
+#&gt;  5 2013-01-01 05:00:00  39.0  64.4
+#&gt;  6 2013-01-01 06:00:00  37.9  67.2
+#&gt;  7 2013-01-01 07:00:00  39.0  64.4
+#&gt;  8 2013-01-01 08:00:00  39.9  62.2
+#&gt;  9 2013-01-01 09:00:00  39.9  62.2
+#&gt; 10 2013-01-01 10:00:00  41    59.6
+#&gt; # ℹ 8,693 more rows
+```
+
+]
+
+---
+
+# Joining requires a key
+
+a variable/column where the values match between datasets
+
+- `time_hour` is the common variable here
+
+- join matching rows from `weather_hourly` to `n_flights_hourly` by `time_hour`  
+
+
+
+
+```r
+n_flights_hourly %&gt;% 
+  left_join(weather_hourly, by = 'time_hour')
+```
+
+--
+
+
+```
+#&gt; # A tibble: 6,266 × 4
+#&gt;   time_hour           n_flights  temp humid
+#&gt;   &lt;dttm&gt;                  &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 2013-01-01 05:00:00         2  39.0  64.4
+#&gt; 2 2013-01-01 06:00:00        18  37.9  67.2
+#&gt; 3 2013-01-01 07:00:00        12  39.0  64.4
+#&gt; 4 2013-01-01 08:00:00        20  39.9  62.2
+#&gt; 5 2013-01-01 09:00:00        19  39.9  62.2
+#&gt; 6 2013-01-01 10:00:00        18  41    59.6
+#&gt; 7 2013-01-01 11:00:00        11  41    57.1
+#&gt; 8 2013-01-01 12:00:00        22  NA    NA  
+#&gt; # ℹ 6,258 more rows
+```
+
+---
+
+# Multiple keys
+
+Sometimes we need to use multiple columns to join
+
+--
+
+
+
+
+
+
+.pull-left[
+
+The number of flights at each hour
+
+
+```r
+n_flights_hourly
+```
+
+```
+#&gt; # A tibble: 6,266 × 5
+#&gt;     year month   day  hour n_flights
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;     &lt;int&gt;
+#&gt;  1  2013     1     1     5         2
+#&gt;  2  2013     1     1     6        18
+#&gt;  3  2013     1     1     7        12
+#&gt;  4  2013     1     1     8        20
+#&gt;  5  2013     1     1     9        19
+#&gt;  6  2013     1     1    10        18
+#&gt;  7  2013     1     1    11        11
+#&gt;  8  2013     1     1    12        22
+#&gt;  9  2013     1     1    13        28
+#&gt; 10  2013     1     1    14        18
+#&gt; # ℹ 6,256 more rows
+```
+
+]
+
+--
+
+.pull-right[
+
+Weather data at each hour
+
+
+```r
+weather_hourly
+```
+
+```
+#&gt; # A tibble: 8,703 × 6
+#&gt;     year month   day  hour  temp humid
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1  2013     1     1     1  39.0  59.4
+#&gt;  2  2013     1     1     2  39.0  61.6
+#&gt;  3  2013     1     1     3  39.0  64.4
+#&gt;  4  2013     1     1     4  39.9  62.2
+#&gt;  5  2013     1     1     5  39.0  64.4
+#&gt;  6  2013     1     1     6  37.9  67.2
+#&gt;  7  2013     1     1     7  39.0  64.4
+#&gt;  8  2013     1     1     8  39.9  62.2
+#&gt;  9  2013     1     1     9  39.9  62.2
+#&gt; 10  2013     1     1    10  41    59.6
+#&gt; # ℹ 8,693 more rows
+```
+
+]
+
+---
+
+# Multiple keys
+
+And the join
+
+
+```r
+n_flights_hourly %&gt;% 
+  left_join(weather_hourly, by = c('year', 'month', 'day', 'hour'))
+```
+
+--
+
+
+```
+#&gt; # A tibble: 6,266 × 7
+#&gt;     year month   day  hour n_flights  temp humid
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1  2013     1     1     5         2  39.0  64.4
+#&gt;  2  2013     1     1     6        18  37.9  67.2
+#&gt;  3  2013     1     1     7        12  39.0  64.4
+#&gt;  4  2013     1     1     8        20  39.9  62.2
+#&gt;  5  2013     1     1     9        19  39.9  62.2
+#&gt;  6  2013     1     1    10        18  41    59.6
+#&gt;  7  2013     1     1    11        11  41    57.1
+#&gt;  8  2013     1     1    12        22  NA    NA  
+#&gt;  9  2013     1     1    13        28  39.2  69.7
+#&gt; 10  2013     1     1    14        18  39.0  54.7
+#&gt; # ℹ 6,256 more rows
+```
+
+---
+
+# Some tips on keys - unique values
+
+It is good practice to verify your joining columns and their values (keys) 
+
+--
+
+.pull-left[
+
+ - Do values uniquely identify an observation? 
+ 
+
+
+ 
+
+```r
+weather_hourly %&gt;% 
+  count(year, month, day, hour, 
+        sort = TRUE # largest counts first
+  )
+```
+
+```
+#&gt; # A tibble: 8,702 × 5
+#&gt;    year month   day  hour     n
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1  2013    11     3     1     2
+#&gt; 2  2013     1     1     1     1
+#&gt; 3  2013     1     1     2     1
+#&gt; 4  2013     1     1     3     1
+#&gt; 5  2013     1     1     4     1
+#&gt; 6  2013     1     1     5     1
+#&gt; 7  2013     1     1     6     1
+#&gt; # ℹ 8,695 more rows
+```
+ 
+ ]
+ 
+--
+ 
+.pull-right[
+
+- There are two values for `2013-11-03 01:00:00`
+ 
+
+```r
+weather_hourly %&gt;% 
+  dplyr::filter(month == 11, 
+                day == 3, 
+                hour == 1)
+```
+
+```
+#&gt; # A tibble: 2 × 6
+#&gt;    year month   day  hour  temp humid
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1  2013    11     3     1  52.0  61.2
+#&gt; 2  2013    11     3     1  50    65.8
+```
+
+&lt;br&gt;
+
+This did not affect our join: flights are between hour 5 and 21 ...
+
+]
+
+---
+
+# Some tips on keys - non-unique values can duplicate rows
+
+
+
+.pull-left[
+
+
+```r
+persons
+```
+
+```
+#&gt;   person
+#&gt; 1      A
+#&gt; 2      B
+#&gt; 3      C
+#&gt; 4      D
+#&gt; 5      E
+```
+
+]
+
+.pull-right[
+
+
+```r
+ages
+```
+
+```
+#&gt;   person age
+*#&gt; 1      A  10
+*#&gt; 2      A  15
+#&gt; 3      B  12
+#&gt; 4      C  11
+#&gt; 5      D  14
+```
+
+]
+
+--
+
+
+```r
+persons %&gt;% 
+  left_join(ages, by = 'person')
+```
+
+```
+#&gt;   person age
+*#&gt; 1      A  10
+*#&gt; 2      A  15
+#&gt; 3      B  12
+#&gt; 4      C  11
+#&gt; 5      D  14
+#&gt; 6      E  NA
+```
+
+---
+
+# Some tips on keys - values need exact match
+
+Clean the data prior joining is required
+
+
+
+
+.pull-left[
+
+
+```r
+persons
+```
+
+```
+#&gt;   person age       hospital
+#&gt; 1      A  30 North Hospital
+#&gt; 2      B  44        Missing
+#&gt; 3      C  27     St. Mark's
+#&gt; 4      D  22  Port Hospital
+#&gt; 5      E  24       Military
+```
+
+]
+
+.pull-right[
+
+
+```r
+hospitals
+```
+
+```
+#&gt;                    hospital address
+#&gt; 1         Military Hospital     ...
+#&gt; 2             Port Hospital     ...
+#&gt; 3 St. Mark's Hospital (SMH)     ...
+#&gt; 4            North Hospital     ...
+#&gt; 5            South Hospital     ...
+```
+
+]
+
+--
+
+
+```r
+persons %&gt;% 
+  left_join(hospitals, by = 'hospital')
+```
+
+```
+#&gt;   person age       hospital address
+#&gt; 1      A  30 North Hospital     ...
+#&gt; 2      B  44        Missing    &lt;NA&gt;
+*#&gt; 3      C  27     St. Mark's    &lt;NA&gt;
+#&gt; 4      D  22  Port Hospital     ...
+*#&gt; 5      E  24       Military    &lt;NA&gt;
+```
+
+---
+
+# Other joins - inner_join() and full_join()
+
+
+
+.pull-left[
+
+
+```r
+persons
+```
+
+```
+#&gt;   person age
+#&gt; 1      A  38
+#&gt; 2      B  39
+#&gt; 3      C  44
+#&gt; 4      E  42
+```
+
+]
+
+.pull-right[
+
+
+```r
+persons_paid
+```
+
+```
+#&gt;   person amount
+#&gt; 1      A     $5
+#&gt; 2      B    $10
+#&gt; 3      C     $8
+#&gt; 4      D     $4
+```
+
+]
+
+--
+
+.pull-left[
+
+```r
+persons %&gt;% 
+  inner_join(persons_paid, by = 'person')
+```
+
+```
+#&gt;   person age amount
+#&gt; 1      A  38     $5
+#&gt; 2      B  39    $10
+#&gt; 3      C  44     $8
+```
+]
+
+--
+
+.pull-right[
+
+```r
+persons %&gt;% 
+  full_join(persons_paid, by = 'person')
+```
+
+```
+#&gt;   person age amount
+#&gt; 1      A  38     $5
+#&gt; 2      B  39    $10
+#&gt; 3      C  44     $8
+#&gt; 4      E  42   &lt;NA&gt;
+#&gt; 5      D  NA     $4
+```
+]
+
+---
+
+class: center, middle, inverse
+
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M02-05-dplyr-joins.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+
+class: middle
+
+# Reshaping data
+
+---
+
+# Data can come in two structures
+
+
+
+
+
+--
+
+.pull-left[
+
+.large[Wide]
+
+
+```r
+gene_data
+```
+
+```
+#&gt; # A tibble: 6 × 7
+#&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
+#&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 A         1     8    11    10    13     9
+#&gt; 2 A         2    10    12     8    14    12
+#&gt; 3 A         3    16     9    10     9    13
+#&gt; 4 B         1     7    11    11     7    10
+#&gt; 5 B         2     7    14     7     8     9
+#&gt; 6 B         3    13     6     4     5     8
+```
+
+]
+
+--
+
+.pull-right[
+
+.large[Long]
+
+
+
+
+```r
+gene_data_long
+```
+
+```
+#&gt; # A tibble: 30 × 4
+#&gt;    Trt     Rep Gene  Count
+#&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+#&gt;  1 A         1 Gene1     8
+#&gt;  2 A         1 Gene2    11
+#&gt;  3 A         1 Gene3    10
+#&gt;  4 A         1 Gene4    13
+#&gt;  5 A         1 Gene5     9
+#&gt;  6 A         2 Gene1    10
+#&gt;  7 A         2 Gene2    12
+#&gt;  8 A         2 Gene3     8
+#&gt;  9 A         2 Gene4    14
+#&gt; 10 A         2 Gene5    12
+#&gt; 11 A         3 Gene1    16
+#&gt; 12 A         3 Gene2     9
+#&gt; 13 A         3 Gene3    10
+#&gt; # ℹ 17 more rows
+```
+
+]
+
+---
+
+# Certain tasks require data in the correct structure
+
+How could you `summarise()` the mean of each gene by `Trt`?
+
+
+```r
+gene_data
+```
+
+```
+#&gt; # A tibble: 6 × 7
+#&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
+#&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 A         1     8    11    10    13     9
+#&gt; 2 A         2    10    12     8    14    12
+#&gt; 3 A         3    16     9    10     9    13
+#&gt; 4 B         1     7    11    11     7    10
+#&gt; 5 B         2     7    14     7     8     9
+#&gt; 6 B         3    13     6     4     5     8
+```
+
+--
+
+From what we have learned ...
+
+
+```r
+gene_data %&gt;% 
+  group_by(Trt, Gene) %&gt;% # ???
+  summarise(mean_count = mean(???)) #???
+```
+
+---
+
+# Reshaping data with the **`tidyr`** package
+
+The goal of tidyr is to help you create **tidy data**. ... you’ll spend less time fighting with the tools and more time working on your analysis
+
+
+&lt;/br&gt;
+
+Part of the core tidyverse
+
+
+```r
+# readr is loaded with
+library(tidyverse)
+# individually
+library(tidyr)
+```
+
+
+.footnote[
+https://tidyr.tidyverse.org/
+]
+
+---
+
+# "Pivoting" data - pivot_longer() wide to long
+
+.pull-left[
+
+
+```r
+gene_data
+```
+
+```
+#&gt; # A tibble: 6 × 7
+#&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
+#&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 A         1     8    11    10    13     9
+#&gt; 2 A         2    10    12     8    14    12
+#&gt; 3 A         3    16     9    10     9    13
+#&gt; 4 B         1     7    11    11     7    10
+#&gt; 5 B         2     7    14     7     8     9
+#&gt; 6 B         3    13     6     4     5     8
+```
+
+]
+
+--
+
+.pull-right[
+
+
+
+
+```r
+gene_data %&gt;% 
+  pivot_longer(cols = starts_with('Gene'), 
+               names_to = 'Gene', 
+               values_to = 'Count')
+```
+
+```
+#&gt; # A tibble: 30 × 4
+#&gt;    Trt     Rep Gene  Count
+#&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+#&gt;  1 A         1 Gene1     8
+#&gt;  2 A         1 Gene2    11
+#&gt;  3 A         1 Gene3    10
+#&gt;  4 A         1 Gene4    13
+#&gt;  5 A         1 Gene5     9
+#&gt;  6 A         2 Gene1    10
+#&gt;  7 A         2 Gene2    12
+#&gt;  8 A         2 Gene3     8
+#&gt;  9 A         2 Gene4    14
+#&gt; 10 A         2 Gene5    12
+#&gt; 11 A         3 Gene1    16
+#&gt; # ℹ 19 more rows
+```
+]
+
+---
+
+# Now we can summarise() by `Trt` and `Gene`
+
+
+```r
+gene_data %&gt;% 
+  pivot_longer(cols = starts_with('Gene'), 
+               names_to = 'Gene', 
+               values_to = 'Count') %&gt;% 
+  group_by(Trt, Gene) %&gt;% 
+  summarise(mean_Count = mean(Count),
+            .groups = 'drop')
+```
+
+```
+#&gt; # A tibble: 10 × 3
+#&gt;    Trt   Gene  mean_Count
+#&gt;    &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt;
+#&gt;  1 A     Gene1      11.3 
+#&gt;  2 A     Gene2      10.7 
+#&gt;  3 A     Gene3       9.33
+#&gt;  4 A     Gene4      12   
+#&gt;  5 A     Gene5      11.3 
+#&gt;  6 B     Gene1       9   
+#&gt;  7 B     Gene2      10.3 
+#&gt;  8 B     Gene3       7.33
+#&gt;  9 B     Gene4       6.67
+#&gt; 10 B     Gene5       9
+```
+
+---
+
+# "Pivoting" data - pivot_wider() long to wide
+
+
+.pull-left[
+
+
+```r
+gene_data_long
+```
+
+```
+#&gt; # A tibble: 30 × 4
+#&gt;    Trt     Rep Gene  Count
+#&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+#&gt;  1 A         1 Gene1     8
+#&gt;  2 A         1 Gene2    11
+#&gt;  3 A         1 Gene3    10
+#&gt;  4 A         1 Gene4    13
+#&gt;  5 A         1 Gene5     9
+#&gt;  6 A         2 Gene1    10
+#&gt;  7 A         2 Gene2    12
+#&gt;  8 A         2 Gene3     8
+#&gt;  9 A         2 Gene4    14
+#&gt; 10 A         2 Gene5    12
+#&gt; 11 A         3 Gene1    16
+#&gt; # ℹ 19 more rows
+```
+
+]
+
+--
+
+.pull-right[
+
+```r
+gene_data_long %&gt;% 
+  pivot_wider(names_from = 'Gene', 
+              values_from = 'Count')
+```
+
+```
+#&gt; # A tibble: 6 × 7
+#&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
+#&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 A         1     8    11    10    13     9
+#&gt; 2 A         2    10    12     8    14    12
+#&gt; 3 A         3    16     9    10     9    13
+#&gt; 4 B         1     7    11    11     7    10
+#&gt; 5 B         2     7    14     7     8     9
+#&gt; 6 B         3    13     6     4     5     8
+```
+]
+
+---
+
+# Pivoting with missing combinations
+
+Produce `NA` by default
+
+
+
+.pull-left[
+
+
+```r
+# A1 Gene1, A2 Gene3 have no rows
+gene_data_long
+```
+
+```
+#&gt; # A tibble: 28 × 4
+#&gt;    Trt     Rep Gene  Count
+#&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+*#&gt;  1 A         1 Gene2    11
+#&gt;  2 A         1 Gene3    10
+#&gt;  3 A         1 Gene4    13
+#&gt;  4 A         1 Gene5     9
+#&gt;  5 A         2 Gene1    10
+#&gt;  6 A         2 Gene2    12
+*#&gt;  7 A         2 Gene4    14
+#&gt;  8 A         2 Gene5    12
+#&gt;  9 A         3 Gene1    16
+#&gt; 10 A         3 Gene2     9
+#&gt; 11 A         3 Gene3    10
+#&gt; # ℹ 17 more rows
+```
+
+]
+
+--
+
+.pull-right[
+
+```r
+gene_data_long %&gt;% 
+  pivot_wider(names_from = 'Gene', 
+              values_from = 'Count')
+```
+
+```
+#&gt; # A tibble: 6 × 7
+#&gt;   Trt     Rep Gene2 Gene3 Gene4 Gene5 Gene1
+#&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+*#&gt; 1 A         1    11    10    13     9    NA
+*#&gt; 2 A         2    12    NA    14    12    10
+#&gt; 3 A         3     9    10     9    13    16
+#&gt; 4 B         1    11    11     7    10     7
+#&gt; 5 B         2    14     7     8     9     7
+#&gt; 6 B         3     6     4     5     8    13
+```
+]
+
+---
+
+# Pivoting with missing combinations - values_fill 
+
+Can choose a value for missing with `values_fill`
+
+
+```r
+gene_data_long %&gt;% 
+  pivot_wider(names_from = 'Gene', 
+              values_from = 'Count', 
+*             values_fill = 0)
+```
+
+```
+#&gt; # A tibble: 6 × 7
+#&gt;   Trt     Rep Gene2 Gene3 Gene4 Gene5 Gene1
+#&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 A         1    11    10    13     9     0
+#&gt; 2 A         2    12     0    14    12    10
+#&gt; 3 A         3     9    10     9    13    16
+#&gt; 4 B         1    11    11     7    10     7
+#&gt; 5 B         2    14     7     8     9     7
+#&gt; 6 B         3     6     4     5     8    13
+```
+
+---
+
+class: center, middle, inverse
+
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M02-06-tidyr-reshape-pivot.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

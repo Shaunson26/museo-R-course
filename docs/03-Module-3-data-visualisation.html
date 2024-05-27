@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Module 3 - data visualisation</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.26/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: middle, inverse, title
+
+&lt;style type="text/css"&gt;
+h1 {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+&lt;/style&gt;
+
+
+
+# Module 3 - Data visualisation 
+
+.section-subtitle[
+
+- Graphics in R
+- ggplot2
+ - histograms
+ - scatterplots
+ - boxplots
+ - lineplots
+ - barplots with error bars
+- dendrograms
+- ordination
+- heatmaps
+
+
+]
+
+---
+
+# What do we use data visualisation for?
+
+
+## Exploratory data analysis
+ - Identifying trends and patterns
+ - Understanding data distribution
+ - Detecting outliers and anomalies
+ 
+
+--
+
+## Statistical modeling
+ - Examining model parameters against data
+ - Facilitating comparisons
+ 
+--
+
+
+## Communication
+ - Visual representation is more engaging
+ - Simplifying complex data
+ - Highlighting relationships
+
+
+---
+
+# R graphics
+
+The quality and diversity of R graphics further strengthens the popularity of R
+
+.pull-left[
+&lt;img src="images/r-graph-gallery.png" style="display: block; margin: auto;" /&gt;
+
+&lt;img src="images/ggplot-gallery.png" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="images/ggplot-gallery-2.png" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+
+Simply google "R graphics examples" to find many websites dedicated to R graphics  
+e.g. https://r-graph-gallery.com/
+
+]
+]
+
+
+
+---
+
+# Base R graphics
+
+Can do many things and does the basics ... 
+
+ - good for quick views of the data
+ - the **syntax is inconsistent** between plots
+
+
+```r
+hist()         # histogram
+boxplot()      # boxplot
+plot()         # scatter and line plots
+barplot()      # barplots
+```
+
+.pull-left[
+.pull-left[
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+
+.pull-right[
+.pull-left[
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+
+---
+
+# ggplot2 - The Grammer of Graphics
+
+`ggplot2` is a system for declaratively creating graphics, based on The Grammar of Graphics. You provide the data, tell `ggplot2` how to map variables to aesthetics, what graphical primitives to use, and it takes care of the details.&lt;sup&gt;1&lt;/sup&gt;
+
+
+.pull-left[
+
+Part of the core tidyverse
+
+
+```r
+# readr is loaded with
+library(tidyverse)
+# individually
+library(ggplot2)
+```
+
+- There a many, many extensions to `ggplot2` - [see CRAN](https://cran.r-project.org/web/packages/available_packages_by_name.html#available-packages-G)
+
+- ggplot2: Elegant Graphics for Data Analysis book - https://ggplot2-book.org/
+]
+
+.pull-right[
+
+&lt;img src="images/ggplot-gallery-2.png" style="display: block; margin: auto;" /&gt;
+
+]
+
+.footnote[
+[1] https://ggplot2.tidyverse.org/  
+
+]
+
+---
+
+# We will focus on these types of plots
+
+**In class**
+
+- ggplot2
+ - histograms
+ - scatterplots
+ - boxplots
+ - lineplots
+ - barplots with error bars
+ 
+**Additional material**
+ 
+- base R
+  - dendrograms
+  - ordination
+
+- pheatmap
+ - heatmaps
+
+---
+
+# How ggplot works
+
+Within the `ggplot()` function, we include
+ - **Data** - a data.frame
+ -  **Aesthetic mappings** -  what columns map to plot components (x, y, colour, shape, etc ..)
+ 
+Next we add layers using the plus symbol `+` .. similar to the pipe  
+ - **Geoms** - what geometrical object represents the data e.g. points, lines, bars, boxplot ...
+ - **Configurations** - controlling the plot components e.g. axes, colours and shapes ...
+ - **Labels** - axes and plot titles
+ - **Themes** - futher control of plot components e.g. fonts, lines, legend styling ...
+
+
+
+```r
+ggplot(data = penguins,                                             # data                      
+       mapping = aes(x = flipper_length_mm, y = body_mass_g)) +     # aesthetics
+  geom_point() +                                                    # geom
+  geom_line() +                                                     # another geom
+  scale_x_continuous(breaks = seq(from = 180, to = 220, by = 10)) + # x-axis
+  labs(x = "Flipper length (mm)", title = "A plot title") +         # labels
+  theme(text = element_text(size = 14))                             # theme
+```
+
+
+---
+
+# ggplot() with the data layer
+
+This provides data to `ggplot()` but no asthetics have been specified
+
+
+```r
+ggplot(data = penguins)
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-13-1.png" width="490px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Axes asthetics
+
+Now we have a coordinate system
+
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) 
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-14-1.png" width="490px" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Adding a point geom
+
+Now we have added a geom - **points** - to the coordinate system
+
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm,  y = body_mass_g)) +
+  geom_point()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-15-1.png" width="490px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adding another geom
+
+We can add other geoms e.g. lines with points, or  regression lines
+
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm,  y = body_mass_g)) +
+  geom_point() +
+  geom_smooth(method = 'lm')
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-16-1.png" width="490px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adding axes labels
+
+Then we can update labels
+
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm,  y = body_mass_g)) +
+  geom_point() +
+  geom_smooth(method = 'lm') +
+  labs(x="Flipper length (mm)", y ="Body mass (g)", title="Body mass and flipper length")
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-17-1.png" width="490px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Theme-ing 
+
+We can further edit using `theme()`, and there are some pre-configured ones `theme_*` e.g. `theme_classic()`
+
+
+```r
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm,  y = body_mass_g)) +
+  geom_point() +
+  geom_smooth(method = 'lm') +
+  labs(x="Flipper length (mm)", y ="Body mass (g)", title="Body mass and flipper length") +
+  theme_classic()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-18-1.png" width="490px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Exporting the plot
+
+We use `ggsave()` to export the plot
+
+ - it uses the plot last made by default
+ - can save different file types&lt;sup&gt;1&lt;/sup&gt;
+ - can use different units e.g. `c("in", "cm", "mm", "px")`
+ 
+
+```r
+ggsave(filename = 'my-plot.png',                   # output a .PNG file type
+       plot = last_plot(),                         # using the last plot made
+       height = 100,  width = 100, units = 'mm')   # dimensions and units
+```
+
+.footnote[
+
+[1] The file in the example is `.png` and termed the **device**, and can be many e.g. `.pdf`, `.tiff`
+`.bmp`, etc.
+]
+
+---
+
+# Code organisation in following examples
+
+To save space in the notes, I will move to piping the data into `ggplot()` and omitting the `mapping` argument
+
+ - the data is piped to `ggplot(data = )`
+ - `mapping` is the next positional argument `ggplot(data =, mapping=)`
+
+
+```r
+# From here on
+penguins %&gt;% 
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()                      
+```
+
+---
+class: middle
+
+# Histograms
+
+---
+
+# Histograms - geom_histogram()
+
+Histograms provide a visual representation of the **distribution of a single variable**. 
+
+
+```r
+penguins %&gt;% 
+  ggplot(aes(x = flipper_length_mm)) + # required aesthetic is x 
+  geom_histogram()                     # prints a message about bins/binwidth
+```
+
+```
+#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-21-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Altering the bin width
+
+Helps undercover finer patterns (if they exist)
+
+.pull-left[
+
+```r
+# N values within 1 : 180, 181, 182, ...
+penguins %&gt;% 
+  ggplot(aes(x = flipper_length_mm)) +
+  geom_histogram(binwidth = 1)
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+
+```r
+# N values within 10 : 180, 190, 200, ...
+penguins %&gt;% 
+  ggplot(aes(x = flipper_length_mm)) +
+  geom_histogram(binwidth = 10)
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Adjusting bar visual properties
+
+**Bars** in ggplot2 have a **fill** color, a border **color** and **alpha** transparency. These can be:
+
+  - applied simply applied to all bars (as below)
+  - mapped to aesthetics e.g. different fill for different groups in data (in exercises)
+
+
+```r
+penguins %&gt;% 
+  ggplot(aes(x = flipper_length_mm)) + 
+* geom_histogram(fill = 'red', color = 'blue', alpha = 0.5) # fill, colour and transparency all bars
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-24-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: center, middle, inverse
+
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M03-01-Histograms.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+]
+
+---
+class: middle
+
+# Scatterplots
+
+---
+
+# Scatterplots - geom_point()
+
+Scatterplots provide a visual representation of **relationships between 2 variables**.
+
+
+```r
+penguins %&gt;%                          
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) + # x and y are required
+  geom_point()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-25-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting point size, colour, shape and transparency
+
+**points** in ggplot have a **size**, **colour**, **shape** and **alpha** transparency. These can be:
+
+  - applied simply applied to all bars (as below)
+  - mapped to aesthetics e.g. different fill for different groups in data
+
+
+```r
+penguins %&gt;%                          
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+* geom_point(size = 3, shape = 'triangle', colour = 'red', alpha = 0.5) # ALL points
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-26-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Transparency can help with overplotting
+
+
+```r
+penguins %&gt;%                          
+  ggplot(aes(x = flipper_length_mm, y = bill_length_mm) +
+* geom_point(size = 3, alpha = 0.33)
+```
+
+.pull-left[
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Colouring by group
+
+We have to use an **aesthetic** argument
+
+
+```r
+penguins %&gt;%                          
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+* geom_point(mapping = aes(colour = species), size = 2)
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-30-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adding other geoms - a regression line
+
+We can **layer** a regression line on top as another **geom** using **geom_smooth()**
+
+
+```r
+penguins %&gt;%                          
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(mapping = aes(colour = species)) +
+* geom_smooth(method = 'lm') # lm = linear model
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-31-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+# A note on **aesthetic inheritence** across layers
+
+Aesthetic mappings in `geom_*()` are **local** ... 
+  
+
+```r
+penguins %&gt;%                          
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
+* geom_point(mapping = aes(colour = species)) +          # points coloured by species
+  geom_smooth(method = 'lm')                             # regression for all data
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-32-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# A note on **aesthetic inheritence** across layers
+
+Aesthetic mappings in `ggplot()` are **global** and **used in other layers** 
+
+
+```r
+penguins %&gt;%                          
+* ggplot(aes(x = flipper_length_mm, y = body_mass_g, colour = species)) +
+  geom_point() +                # points coloured by species
+  geom_smooth(method = 'lm')    # regression by species
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-33-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+class: center, middle, inverse
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M03-02-Scatterplots.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+
+# Boxplots - geom_boxplot()
+
+Boxplots help visualise **distributions among groups**.
+
+
+```r
+penguins %&gt;% 
+  ggplot(aes(x = species, y = body_mass_g)) +
+  geom_boxplot()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-34-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Boxplots 
+
+**Boxplots** in ggplot2 have a **fill** color, a border **color** and **alpha** transparency.
+
+
+```r
+penguins %&gt;% 
+  ggplot(aes(x = species, y = body_mass_g)) +
+  geom_boxplot(fill = 'steelblue', color = 'coral', alpha = 0.25)
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-35-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# We can use aesthetics for multiple columns
+
+
+```r
+penguins %&gt;% 
+* ggplot(aes(x = species, y = body_mass_g, fill = island)) +
+  geom_boxplot()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-36-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+ Each x group has an equal width on the plot. The island group is then divided into that space.
+]
+
+---
+
+# Do not be afraid to do horizontal plot
+
+If you have long axes names, try putting values on x instad of y
+
+
+```r
+penguins %&gt;% 
+  mutate(species_island = paste(species, island, sep = '_')) %&gt;%     # create species + island column
+  ggplot(aes(y = species_island, x = body_mass_g, fill = island)) +
+  geom_boxplot()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-37-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+# Line plots
+
+---
+
+# Line plots - geom_line()
+
+Often used where x is time
+
+
+
+
+
+```r
+plant_heights_a1 %&gt;% 
+  ggplot(aes(x = time, y = height_cm)) +  # x and y required
+* geom_line()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-39-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Lines by group
+
+Individual lines are joined within a `group` or `colour` aesthetic
+
+
+
+
+
+```r
+plant_heights_a %&gt;% 
+* ggplot(aes(x = time, y = height_cm, group = replicate)) +
+  geom_line()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-41-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Lines by group
+
+Individual lines are joined within a `group` or `colour` aesthetic
+
+
+```r
+plant_heights_a %&gt;% 
+* ggplot(aes(x = time, y = height_cm, colour = replicate)) +
+  geom_line()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-42-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+# Replicate lines per group
+
+You may need to mix the `colour` and `group`, and further do some data preparation to create unique values
+
+
+```r
+plant_heights %&gt;% 
+  mutate(genotype_replicate = paste(genotype, replicate)) %&gt;% # Create unique genotype_replicate values
+  ggplot(aes(x = time, y = height_cm, 
+             group = genotype_replicate,                      # Unique lines genotype_replicate
+             colour = genotype)) +                            # Coloured by genotype  
+  geom_line()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-43-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Adjusting visual properties
+
+**Lines** have **colour**, **alpha**, **linetype**, and **linewidth** 
+
+
+```r
+plant_heights_a %&gt;% 
+  ggplot(aes(x = time, y = height_cm, group = replicate)) + 
+* geom_line(aes(linetype = replicate), linewidth = 1, colour = 'coral')
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-44-1.png" width="42%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adjusting the x axis
+
+Sometimes you may want finer control of the x axis - `scale_x_continuous()`
+ 
+ - scale = a type of aesthetic that can change
+ - x = the x axis
+ - continuous = x is continuous numbers (compare to a boxplot with discrete groups)
+ 
+
+```r
+plant_heights_a %&gt;% 
+  ggplot(aes(x = time, y = height_cm, group = replicate)) + 
+  geom_line() +
+  scale_x_continuous(breaks = seq(from = 0, to = 15, by = 2)) # define axis numbers
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-45-1.png" width="48%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: center, middle, inverse
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M03-03-Lineplots.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+
+class: middle
+
+# Barplots
+
+---
+
+# Barplots - geom_col() / geom_bar()
+
+Usually show the means and standard errors across groups
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-46-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Barplots require summary data
+
+Means we need to do some summarising first&lt;sup&gt;1&lt;/sup&gt;
+ 
+
+```r
+penguins_mass_means &lt;-
+  penguins %&gt;% 
+  group_by(species) %&gt;% 
+  summarise(
+    mean_body_mass_g = mean(body_mass_g, na.rm = TRUE),
+    se_body_mass_g = sd(body_mass_g, na.rm = TRUE) / sqrt(n())
+  )
+
+penguins_mass_means
+```
+
+```
+#&gt; # A tibble: 3 × 3
+#&gt;   species   mean_body_mass_g se_body_mass_g
+#&gt;   &lt;fct&gt;                &lt;dbl&gt;          &lt;dbl&gt;
+#&gt; 1 Adelie               3701.           37.2
+#&gt; 2 Chinstrap            3733.           46.6
+#&gt; 3 Gentoo               5076.           45.3
+```
+ 
+.footnote[
+
+[1] ggplot can summarise your data for you using `stat_summary()`, but we usually want the summary data for other purposes, so we make it.
+
+]
+
+---
+
+# Barplot with summary data
+
+Once the summary data is ready, we make the plot
+
+
+```r
+penguins_mass_means %&gt;% 
+  ggplot(aes(x = species, y = mean_body_mass_g)) + # x and y required
+  geom_col()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-48-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Barplots with multiple aesthetics
+
+By default, fill groups **stacked** on their x group .. need to "dodge" their position
+
+
+
+.pull-left[
+
+```r
+penguins_island_mass_means %&gt;% 
+  ggplot(aes(x = species, y = mean_body_mass_g, 
+*            fill = island)) +
+  geom_col()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-50-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+```r
+penguins_island_mass_means %&gt;% 
+  ggplot(aes(x = species, y = mean_body_mass_g, 
+*            fill = island)) +
+* geom_col(position = 'dodge2') # or "dodge"
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-51-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+&lt;style type="text/css"&gt;
+.margin-0 &gt; p {
+  margin: 0
+}
+&lt;/style&gt;
+
+.footnote[.margin-0[
+`"dodge2"` leaves a gap between columns
+]]
+
+]
+
+
+---
+
+# Stacking useful for compositional data
+
+E.g. The relative expenditure in different categories
+
+
+
+
+```r
+USPersonalExpenditure2 %&gt;% 
+  ggplot(aes(x = Year, y = Expenditure_pct, fill = Category)) +
+  geom_col()
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-54-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Adding error bar layer - geom_errorbar()
+
+Provide `geom_errorbar()` with aesthetics `ymin` and `ymax`
+
+
+```r
+penguins_mass_means %&gt;% 
+  ggplot(aes(x = species, y = mean_body_mass_g)) +
+  geom_col() +
+* geom_errorbar(aes(ymin = mean_body_mass_g - se_body_mass_g,  # position of error limits
+*                   ymax = mean_body_mass_g + se_body_mass_g), # position of error limits
+*               width = 0.25)      # horizontal width of error bar relative to bar width
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-55-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Errors bars with multiple groups
+
+Its quite painful to do ..
+
+
+```r
+penguins_island_mass_means %&gt;% 
+  ggplot(aes(x = species, y = mean_body_mass_g, fill = island)) +
+  geom_col(position = 'dodge2') +
+  geom_errorbar(aes(ymin = mean_body_mass_g - se_body_mass_g,  
+                    ymax = mean_body_mass_g + se_body_mass_g), 
+                width = 0.25,
+                position = position_dodge(width = 0.9)) # centers error bars (bars are 0.9 in width) ..
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-56-1.png" width="42%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: center, middle, inverse
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M03-05-Barplots.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+class: middle
+
+# Dendrograms
+
+---
+
+# Dendrograms
+
+Dendrograms visualise pairwise values observed in a **distance matrix**
+
+We will cover the step in the next slides ...
+
+
+```r
+eurodist %&gt;%    # eurodist is a distance matrix
+  hclust() %&gt;%  # cluster distance matrix
+  plot()        # plot cluster object
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-57-1.png" height="450px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Dendrograms - distance matrix
+
+Distance matrices are contain pairwise values
+
+ - distances between objects
+ - similarity between samples
+ - many other times of 'distance/dissimilarity' measures
+
+--
+
+
+```r
+# road distances (in km) between 21 cities in Europe
+eurodist
+```
+
+
+```
+#&gt;            Athens Barcelona Brussels Calais Cherbourg Cologne
+#&gt; Barcelona    3313                                            
+#&gt; Brussels     2963      1318                                  
+#&gt; Calais       3175      1326      204                         
+#&gt; Cherbourg    3339      1294      583    460                  
+#&gt; Cologne      2762      1498      206    409       785        
+#&gt; Copenhagen   3276      2218      966   1136      1545     760
+```
+
+--
+
+The `dist()` function will compute a distance between columns based on row values
+ - `dist(x, method="euclidean")`
+ - You only want to include the data columns you're comparing e.g. NOT columns of identifiers
+
+
+
+
+---
+
+# Dendrograms - clustering a distance matrix
+
+Hierarchical clustering is a method of determining building groups within a distance
+matrix for downstream use e.g. visualisation
+
+--
+
+There are different methods for this, and each lead to slightly different results
+  - "average" clustering is popular
+
+  
+
+```r
+eurodist_clust &lt;- eurodist %&gt;% hclust(method = 'average')
+eurodist_clust
+```
+
+```
+#&gt; 
+#&gt; Call:
+#&gt; hclust(d = ., method = "average")
+#&gt; 
+#&gt; Cluster method   : average 
+#&gt; Number of objects: 21
+```
+
+--
+
+The cluster object can be used for other purposes
+  - e.g. which samples can form different groups
+
+---
+
+# Dendrograms - ploting a hclust object
+
+`hclust` objects have **plotting methods**, which means we use `plot()` to create a histrogram
+
+
+```r
+eurodist_clust %&gt;% plot() 
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-61-1.png" height="400px" style="display: block; margin: auto;" /&gt;
+
+--
+
+The package `dendextend` helps control output of dendrograms and is popular -
+[Introduction to dendextend](https://cran.r-project.org/web/packages/dendextend/vignettes/dendextend.html)
+
+
+---
+
+# Ordination
+
+Distance matrices can also be presented in a 2D map - an **ordination**
+
+Plotting the road distances almost resembles their positions on a map
+
+.pull-left[
+
+```r
+#library(MASS) part of base R
+eurodist_mds &lt;- MASS::isoMDS(eurodist)
+```
+
+```
+#&gt; initial  value 7.505733 
+#&gt; final  value 7.505688 
+#&gt; converged
+```
+
+
+```r
+plot(eurodist_mds$points, type = 'n')
+text(eurodist_mds$points, 
+     labels = rownames(eurodist_mds$points))
+```
+]
+
+.pull-right[
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-64-1.png" height="400px" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+class: middle
+
+# Heatmaps
+
+---
+
+# Heatmaps
+
+Heatmaps are a method to explore large multivariate data sets.
+
+The package `pheatmap` pretty heatmaps is a popular package for creating heatmaps
+and extends base R `heatmap()`
+
+&lt;img src="images/Heatmaps_image.png" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+[pheatmaps](https://cran.r-project.org/web/packages/pheatmap/index.html)
+]
+
+---
+
+# pheatmap
+
+
+```r
+library(pheatmap)
+```
+
+Uses a **data.frame** with row and column names
+ - if you have a tibble, you will need to go back to a data.frame
+ 
+It clusters rows and columns to reveal patters in the data
+ 
+
+```r
+pheatmap(test,
+         # defaults
+         cluster_rows = TRUE,
+         cluster_cols = TRUE,
+         clustering_distance_rows = "euclidean",
+         clustering_distance_cols = "euclidean",
+         # useful
+         scale = "none" # scale row or columns
+)
+```
+
+&lt;img src="03-Module-3-data-visualisation_files/figure-html/unnamed-chunk-67-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
