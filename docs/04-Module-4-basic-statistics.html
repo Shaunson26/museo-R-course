@@ -243,16 +243,22 @@ example_data
 
 ```
 #&gt;    group response
-#&gt; 1      A        5
-#&gt; 2      A        3
-#&gt; 3      A        3
-#&gt; 4      A        6
-#&gt; 5      A        8
-#&gt; 6      B       18
-#&gt; 7      B       22
-#&gt; 8      B       18
-#&gt; 9      B       18
-#&gt; 10     B       15
+#&gt; 1      A      5.1
+#&gt; 2      A      4.1
+#&gt; 3      A      6.4
+#&gt; 4      A      5.4
+#&gt; 5      A      4.7
+#&gt; 6      A      6.4
+#&gt; 7      A      6.9
+#&gt; 8      A      2.6
+#&gt; 9      B      8.4
+#&gt; 10     B      8.5
+#&gt; 11     B      8.8
+#&gt; 12     B      8.2
+#&gt; 13     B      7.6
+#&gt; 14     B      8.9
+#&gt; 15     B      9.7
+#&gt; 16     B      8.2
 ```
 ]
 
@@ -282,6 +288,13 @@ t.test(
  
 ---
 
+# Visualise the data
+
+
+&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-8-1.png" height="400px" style="display: block; margin: auto;" /&gt;
+
+---
+
 # Two sample t-test in R
 
 
@@ -298,22 +311,730 @@ t.test(
 #&gt; 	Two Sample t-test
 #&gt; 
 #&gt; data:  response by group
-#&gt; t = -9.0233, df = 8, p-value = 1.818e-05
+#&gt; t = -6.1082, df = 14, p-value = 2.704e-05
 #&gt; alternative hypothesis: true difference in means between group A and group B is not equal to 0
 #&gt; 95 percent confidence interval:
-#&gt;  -16.573393  -9.826607
+#&gt;  -4.509404 -2.165596
 #&gt; sample estimates:
 #&gt; mean in group A mean in group B 
-#&gt;             5.0            18.2
+#&gt;          5.2000          8.5375
 ```
 
 --
 
 .footnote[
-**Conclusion**: The values were significantly higher in B than A (independent t-test: t = 9.02, df = 8, P &lt; 0.001)
+**Conclusion**: The values were significantly higher in B than A (independent t-test: t = 6.1, df = 14, P &lt; 0.001)
 ]
 
 ---
+
+name: paired-t-test
+
+# Paired t-test
+
+Compares the mean difference of two groups when the **same individuals were measured in each group** . 
+
+**Example:** Measuring performance of 10 machines before and after upgrade
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+--
+
+
+.middle[
+We will not examine this in class - [there are slides at end of presentation](#paired-t-test-section) - for you to view in your own time. I have also provided an exercise in `M04-01-t-test.R`. 
+]
+
+
+---
+
+class: center, middle, inverse
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M04-01-t-test.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+
+class: middle
+
+# Analysis of Variance
+
+&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-10-1.png" height="400px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# ANOVA
+
+ANOVA is used to compare the **means** across levels of **one or more categorical independent variables**. The logic is similar to a t-test, only with more groups. More complex designs can be used too - **factorial ANOVA**.
+
+**Example:** Is there a difference in body weight of mice between five different diets
+
+--
+
+**How it works**
+
+1. Based on the **linear model**: `\(y_{ij} = \mu + \alpha_i + \epsilon{ij}\)`
+  - `\(\mu\)` is the overall mean across all samples
+  - `\(\alpha_i\)` is the effect of each group
+  - `\(\epsilon\)` is the error term: random variability in `\(y\)` that the model does not capture
+
+--
+
+2. ANOVA **partitions variance between and within groups** to create an **F test statistic**
+ - `\(F = \frac{MS_{between}}{MS_{within}}\)` 
+ - size depends on how different means are vs how much variation in the groups
+
+--
+
+3. Compare the test statistic to a F distribution
+  - Null hypothesis `\(H_o: \mu_1 = \mu_2 = \mu_n\)`
+  - Determine how likely your test statistic is observed - **the P value**
+  - Conclude if means come from same population - **keep or reject null hypothesis**
+
+---
+
+# ANOVA in R
+
+There are 2 ways to do ANOVA in R - this is the "traditional" way.
+
+.pull-left[
+
+**What we need**
+
+A data.frame with 2 columns
+   - response values
+   - group identifiers
+
+
+
+
+```r
+head(example_data, n = 12)
+```
+
+```
+#&gt;    group response
+#&gt; 1      A        5
+#&gt; 2      A        3
+#&gt; 3      A        3
+#&gt; 4      A        6
+#&gt; 5      A        8
+#&gt; 6      A        7
+#&gt; 7      A        6
+#&gt; 8      A       10
+#&gt; 9      B        9
+#&gt; 10     B       14
+#&gt; 11     B       16
+#&gt; 12     B       15
+```
+]
+
+--
+
+.pull-right[
+
+**What we do**
+
+Plot the data first!!
+
+Use the `aov()` 
+
+ - `response ~ group` is the formula
+ - those columns live in `data = example_data`
+
+
+
+```r
+example_data_aov &lt;-
+  aov(response ~ group, data = example_data)
+```
+
+Then use `summary()` for the ANOVA table
+
+
+```r
+summary(example_data_aov)
+```
+
+
+Pairwise testing between groups can be conducted with `TukeyHSD()`
+
+
+```r
+TukeyHSD(example_data_aov)
+```
+]
+
+---
+
+# Visualise the data
+
+&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-16-1.png" height="400px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# ANOVA in R
+
+
+```r
+example_data_aov &lt;-
+  aov(response ~ group, data = example_data)
+
+summary(example_data_aov)
+```
+
+```
+#&gt;             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+#&gt; group        2  234.3  117.17   13.45 0.000174 ***
+#&gt; Residuals   21  183.0    8.71                     
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+**Conclusion**: A difference in means between groups was detected (ANOVA: F&lt;sub&gt;2,21&lt;/sub&gt; = 13.5, P = &lt;0.001)
+
+--
+
+.footnote[
+Given a difference was detected, we logically next test which groups differed using **pairwise testing**
+]
+
+---
+
+# ANOVA pairwise testing in R
+
+The "Tukey honest significant difference" pairwise comparison can be conducted on `aov()` object using `TukeyHSD()`
+
+
+```r
+TukeyHSD(example_data_aov)
+```
+
+```
+#&gt;   Tukey multiple comparisons of means
+#&gt;     95% family-wise confidence level
+#&gt; 
+#&gt; Fit: aov(formula = response ~ group, data = example_data)
+#&gt; 
+#&gt; $group
+#&gt;     diff       lwr       upr     p adj
+*#&gt; B-A 5.75  2.029642  9.470358 0.0023039
+*#&gt; C-A 7.25  3.529642 10.970358 0.0002098
+#&gt; C-B 1.50 -2.220358  5.220358 0.5750517
+```
+
+.pull-left[
+&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-19-1.png" height="225px" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+
+**Conclusion**: A difference in means between groups was detected (ANOVA: F&lt;sub&gt;2,21&lt;/sub&gt; = 13.5, P = &lt;0.001). Groups B and C differed from A (tukeys HSD: p&lt;sub&gt;adj&lt;/sub&gt; &lt; 0.05) but not with each other (tukeys HSD: p&lt;sub&gt;adj&lt;/sub&gt; = 0.576)
+
+]
+
+---
+
+# Complex ANOVA
+
+More complex designs can be accomplished with ANOVA
+
+- Two, or more factors, with interactions
+
+
+```r
+aov(response ~ treatment1 * treatment2, data = example_data)
+```
+
+- Nested designs
+
+
+```r
+aov(numberAnimals ~ SpeciesRemoval + Site %in% SpeciesRemoval, data = example_data)
+```
+
+--
+
+However the latter is better with **linear mixed models** 
+
+
+```r
+library(lme4)
+fit1 &lt;- lmer(numberAnimals ~ SpeciesRemoval + (1|Site))
+anova(fit1)
+```
+
+.footnote[
+[lm4 book](https://stat.ethz.ch/~maechler/MEMo-pages/lMMwR.pdf)
+]
+
+---
+
+class: center, middle, inverse
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M04-02-ANOVA.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+
+class: middle
+
+# Linear regression
+
+&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-23-1.png" height="400px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Linear regression
+
+Used to model the relationship between a **response variable** and **one, or more, explanatory variables**.
+
+**Example:** Is temperature and rainfall good predictors of plant height?
+
+--
+
+**How it works**
+
+1. A linear model: `\(y = \alpha + \beta_1x_1 + \beta_2x_2 + \beta_nx_x + \epsilon\)`
+  - `\(\alpha\)` is the intercept: value of `\(y\)` when `\(x = 0\)`)
+  - `\(\beta\)` are the slopes: amount change in `\(y\)` for each unit change in each `\(x\)`
+  - `\(\epsilon\)` is the error term: random variability in `\(y\)` that the model does not capture
+
+--
+
+2. Use **method of least squares** to estimate line of best fit
+
+--
+
+3. Obtain summary of the model
+  - coefficients and standard errors
+  - Statistical tests whether coefficients are 0 or different from each other
+
+--
+
+4. Conduct ANOVA on predictors
+ 
+--
+
+4. Obtain predictions from model (if required)
+
+
+
+---
+
+# Simple linear regression in R
+
+.pull-left[
+
+**What we need**
+
+A data.frame with 2 columns
+   - response values
+   - predictor values
+
+
+
+
+```r
+head(example_data,  n = 12)
+```
+
+```
+#&gt;    growth temperature
+#&gt; 1    29.0          21
+#&gt; 2    15.7          14
+#&gt; 3     9.6          14
+#&gt; 4    33.2          24
+#&gt; 5    45.3          28
+#&gt; 6    28.1          26
+#&gt; 7    24.8          23
+#&gt; 8    42.0          30
+#&gt; 9    18.5          18
+#&gt; 10   26.3          26
+#&gt; 11   38.8          28
+#&gt; 12   44.1          27
+```
+]
+
+--
+
+.pull-right[
+
+**What we do**
+
+Plot the data first!!
+
+Use the `lm()` function with a **formula**
+
+ - `response ~ predictor` is the formula
+ - those columns live in `data = example_data`
+
+
+
+```r
+example_data_lm &lt;-
+  lm(
+    formula = growth ~ temperature, 
+    data = example_data
+  )
+```
+
+Then use `summary()` for the fit details
+
+
+```r
+summary(example_data_lm)
+```
+
+]
+
+---
+
+# Visualise the data
+
+
+```r
+plot(growth ~ temperature, data = example_data, pch = 19)
+```
+
+&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-28-1.png" height="400px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Simple linear regression in R
+
+
+Always assign the result to a variable (we use it later)
+
+
+```r
+example_data_lm &lt;- lm(formula = growth ~ temperature, data = example_data)
+```
+
+--
+
+The printed result is very brief
+
+ - it provides the `\(\alpha\)` and `\(\beta\)` coefficients
+
+
+```r
+example_data_lm
+```
+
+```
+#&gt; 
+#&gt; Call:
+#&gt; lm(formula = growth ~ temperature, data = example_data)
+#&gt; 
+#&gt; Coefficients:
+#&gt; (Intercept)  temperature  
+#&gt;      -1.085        1.328
+```
+
+Each unit increase in temperature is associated with a 1.328 increase in growth
+---
+
+# Simple linear regression in R
+
+We have to use **accessor functions** to obtain other information about the model e.g. `summary()`
+
+
+```r
+summary(fit1)
+```
+
+--
+
+.pull-left-66[
+
+```
+#&gt; 
+#&gt; Call:
+#&gt; lm(formula = growth ~ temperature, data = example_data)
+#&gt; 
+#&gt; Residuals:
+#&gt;     Min      1Q  Median      3Q     Max 
+#&gt; -10.925  -5.798   1.548   3.010  14.547 
+#&gt; 
+#&gt; Coefficients:
+#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept)  -1.0854     5.5054  -0.197    0.846    
+#&gt; temperature   1.3282     0.2493   5.328 4.59e-05 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; 
+#&gt; Residual standard error: 7.267 on 18 degrees of freedom
+#&gt; Multiple R-squared:  0.612,	Adjusted R-squared:  0.5904 
+#&gt; F-statistic: 28.39 on 1 and 18 DF,  p-value: 4.591e-05
+```
+]
+
+.pull-right-33[
+
+- Model estimates for `\(\alpha\)` and `\(\beta\)`
+ 
+- Statistical tests for `\(\alpha\)` and `\(\beta\)`
+
+- R&lt;sup&gt;2&lt;/sup&gt;
+
+- Other information
+
+]
+
+.footnote[
+
+]
+
+---
+
+# Model assumptions
+
+Graphical diagnostics help us determine
+
+ - random spread of points around the regrssion line: **the trend is linear**
+ - if there is even spread around the regression line: **constant variance**
+ 
+**Data transformation** may be required e.g. log(response) if we fail to see this
+
+--
+
+.pull-left[
+
+
+
+```r
+# Residuals vs fits plot
+plot(example_data_lm, which = 1, pch = 19)
+```
+
+&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-33-1.png" height="275px" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+
+Patterns to look for
+
+&lt;img src="images/residual-patterns.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+]
+
+--
+
+.footnote[
+
+We can check these for `aov()` too
+
+]
+
+---
+
+# If all is good, other accessor functions
+
+Interpret the model
+
+
+```r
+summary(example_data_lm) # shown earilier
+```
+--
+Obtain estimates and confidence intervals
+
+
+```r
+cbind(
+  Est. = coef(example_data_lm),
+  confint(example_data_lm)
+)
+```
+
+```
+#&gt;                  Est.       2.5 %    97.5 %
+#&gt; (Intercept) -1.085408 -12.6518572 10.481041
+#&gt; temperature  1.328218   0.8044689  1.851968
+```
+--
+Predict values
+
+
+```r
+predict(example_data_lm, newdata = data.frame(temperature = c(10,20, 30)), interval = 'confidence')
+```
+
+```
+#&gt;        fit       lwr      upr
+#&gt; 1 12.19678  5.454835 18.93872
+#&gt; 2 25.47896 22.016662 28.94126
+#&gt; 3 38.76114 32.983258 44.53903
+```
+
+---
+
+# If all is good, other accessor functions
+
+Further statistical testing of predictors
+ - We can do an **anova()** on a linear model **lm()** (the other way to do ANOVA in R)
+ - This is more useful for complex regression models
+
+
+```r
+anova(example_data_lm)
+```
+
+```
+#&gt; Analysis of Variance Table
+#&gt; 
+#&gt; Response: growth
+#&gt;             Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+#&gt; temperature  1 1499.19 1499.19  28.387 4.591e-05 ***
+#&gt; Residuals   18  950.64   52.81                      
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+---
+
+# Multiple linear regression
+
+Linear models can be easily extended for more complex situations
+
+  - Is temperature and rainfall good predictor of plant height?
+  
+
+```r
+# Two continuous predictors
+lm(height ~ temperature + rainfall)
+```
+
+  - Is the relationship between flipper length an body mass the same between species?
+
+
+```r
+# Continuous and categorical predictor
+lm(body_mass_g ~ flipper_length_mm * species)
+```
+
+ - Which blood markers best predict the redness of certain skin disease
+ 
+
+```r
+# Many predictors, where a search algorthm can be used to find best predictors
+lm(redness ~ marker1 + marker2 + marker3 + marker4 + marker5)
+```
+
+
+---
+
+# Multiple regression summaries
+
+Have reference groups and then **differences** of groups to the reference
+  - This allows us to compare intercept and slope between groups
+
+--
+
+E.g. For the model
+
+
+```r
+# Growth measures for different temperature at 2 different sites
+lm(growth ~ temperature * site)
+```
+
+--
+
+
+```
+#&gt; Coefficients:
+#&gt;                                   Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept)                             10     0.7093  52.953   &lt;2e-16 ***
+#&gt; temperature                              2     0.1434 -19.946   &lt;2e-16 ***
+#&gt; site2                                    2     1.2110  -0.623    0.536    
+#&gt; temperature:site2                       -1     0.2464  -0.602    0.550
+```
+
+--
+
+Site 1 - Intercept = 10, slope = 2  
+Site 2 - Intercept = (10 + 2) = 12, slope = (2 - 1) = 1
+
+The intercept and slope for Site 2 is not significantly different from Site 1 ...
+
+---
+
+# Moving forward with linear models
+
+Linear modeling is a backbone of R .. if you do continue with them, here some tips
+
+ - Normal linear models are  created with `lm()`
+
+ - Generalised linear models are created with `glm()`
+ 
+ - Generalised additive models with `gam()` from `mgcv` package
+ 
+ - Mixed effect models with `lmer()` from `lme4` package
+ 
+---
+
+class: center, middle, inverse
+
+# Exercise time!
+
+.section-subtitle[
+
+Open the file
+
+.inverse[`M04-03-linear-regression.R`]
+
+and attempt to do the exercises.
+
+We will discuss them shortly
+
+
+]
+
+---
+
+
+ 
+---
+name: paired-t-test-section
+
+class: middle
+
+# paired t-test
+
+---
+
 
 # Paired t-test
 
@@ -467,628 +1188,6 @@ We will discuss them shortly
 
 
 ]
-
----
-
-class: middle
-
-# Analysis of Variance
-
-&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-14-1.png" height="400px" style="display: block; margin: auto;" /&gt;
-
----
-
-# ANOVA
-
-ANOVA is used to compare the **means** across levels of **one or more categorical independent variables**. The logic is similar to a t-test, only with more groups. More complex designs can be used too - **factorial ANOVA**.
-
-**Example:** Is there a difference in body weight of mice between five different diets
-
---
-
-**How it works**
-
-1. Based on the **linear model**: `\(y_{ij} = \mu + \alpha_i + \epsilon{ij}\)`
-  - `\(\mu\)` is the overall mean across all samples
-  - `\(\alpha_i\)` is the effect of each group
-  - `\(\epsilon\)` is the error term: random variability in `\(y\)` that the model does not capture
-
---
-
-2. ANOVA **partitions variance between and within groups** to create an **F test statistic**
- - `\(F = \frac{MS_{between}}{MS_{within}}\)` 
- - size depends on how different means are vs how much variation in the groups
-
---
-
-3. Compare the test statistic to a F distribution
-  - Null hypothesis `\(H_o: \mu_1 = \mu_2 = \mu_n\)`
-  - Determine how likely your test statistic is observed - **the P value**
-  - Conclude if means come from same population - **keep or reject null hypothesis**
-
----
-
-# ANOVA in R
-
-There are 2 ways to do ANOVA in R - this is the "traditional" way.
-
-.pull-left[
-
-**What we need**
-
-A data.frame with 2 columns
-   - response values
-   - group identifiers
-
-
-
-
-```r
-head(example_data, n = 12)
-```
-
-```
-#&gt;    group response
-#&gt; 1      A        5
-#&gt; 2      A        3
-#&gt; 3      A        3
-#&gt; 4      A        6
-#&gt; 5      A        8
-#&gt; 6      A        7
-#&gt; 7      A        6
-#&gt; 8      A       10
-#&gt; 9      B        9
-#&gt; 10     B       14
-#&gt; 11     B       16
-#&gt; 12     B       15
-```
-]
-
---
-
-.pull-right[
-
-**What we do**
-
-Plot the data first!!
-
-Use the `aov()` 
-
- - `response ~ group` is the formula
- - those columns live in `data = example_data`
-
-
-
-```r
-example_data_aov &lt;-
-  aov(response ~ group, data = example_data)
-```
-
-Then use `summary()` for the ANOVA table
-
-
-```r
-summary(example_data_aov)
-```
-
-
-Pairwise testing between groups can be conducted with `TukeyHSD()`
-
-
-```r
-TukeyHSD(example_data_aov)
-```
-]
-
----
-
-# ANOVA in R
-
-
-```r
-example_data_aov &lt;-
-  aov(response ~ group, data = example_data)
-
-summary(example_data_aov)
-```
-
-```
-#&gt;             Df Sum Sq Mean Sq F value   Pr(&gt;F)    
-#&gt; group        2  234.3  117.17   13.45 0.000174 ***
-#&gt; Residuals   21  183.0    8.71                     
-#&gt; ---
-#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-**Conclusion**: A difference in means between groups was detected (ANOVA: F&lt;sub&gt;2,21&lt;/sub&gt; = 13.5, P = &lt;0.001)
-
-Given a difference was detected, we logically next test which groups differed using **pairwise testing**
-
-
----
-
-# ANOVA pairwise testing in R
-
-The "Tukey honest significant difference" pairwise comparison can be conducted on `aov()` object using `TukeyHSD()`
-
-
-```r
-TukeyHSD(example_data_aov)
-```
-
-```
-#&gt;   Tukey multiple comparisons of means
-#&gt;     95% family-wise confidence level
-#&gt; 
-#&gt; Fit: aov(formula = response ~ group, data = example_data)
-#&gt; 
-#&gt; $group
-#&gt;     diff       lwr       upr     p adj
-*#&gt; B-A 5.75  2.029642  9.470358 0.0023039
-*#&gt; C-A 7.25  3.529642 10.970358 0.0002098
-#&gt; C-B 1.50 -2.220358  5.220358 0.5750517
-```
-
-&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-22-1.png" height="250px" style="display: block; margin: auto;" /&gt;
-
----
-
-# Complex ANOVA
-
-More complex designs can be accomplished with ANOVA
-
-- Two, or more factors, with interactions
-
-
-```r
-aov(response ~ treatment1 * treatment2, data = example_data)
-```
-
-- Nested designs
-
-
-```r
-aov(numberAnimals ~ SpeciesRemoval + Site %in% SpeciesRemoval, data = example_data)
-```
-
---
-
-However the latter is better with **linear mixed models** 
-
-
-```r
-library(lme4)
-fit1 &lt;- lmer(numberAnimals ~ SpeciesRemoval + (1|Site))
-anova(fit1)
-```
-
-
-
----
-
-class: center, middle, inverse
-
-# Exercise time!
-
-.section-subtitle[
-
-Open the file
-
-.inverse[`...`]
-
-and attempt to do the exercises.
-
-We will discuss them shortly
-
-
-]
-
----
-
-class: middle
-
-# Linear regression
-
-&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-26-1.png" height="400px" style="display: block; margin: auto;" /&gt;
-
----
-
-# Linear regression
-
-Used to model the relationship between a **response variable** and **one, or more, explanatory variables**.
-
-**Example:** Is temperature and rainfall good predictors of plant height?
-
---
-
-**How it works**
-
-1. A linear model: `\(y = \alpha + \beta_1x_1 + \beta_2x_2 + \beta_nx_x + \epsilon\)`
-  - `\(\alpha\)` is the intercept: value of `\(y\)` when `\(x = 0\)`)
-  - `\(\beta\)` are the slopes: amount change in `\(y\)` for each unit change in each `\(x\)`
-  - `\(\epsilon\)` is the error term: random variability in `\(y\)` that the model does not capture
-
---
-
-2. Use **method of least squares** to estimate line of best fit
-
---
-
-3. Obtain summary of the model
-  - coefficients and standard errors
-  - Statistical tests whether coefficients are 0 or different from each other
-
---
-
-4. Conduct ANOVA on predictors
- 
---
-
-4. Obtain predictions from model (if required)
-
-
-
----
-
-# Simple linear regression in R
-
-.pull-left[
-
-**What we need**
-
-A data.frame with 2 columns
-   - response values
-   - predictor values
-
-
-
-
-```r
-head(example_data,  n = 12)
-```
-
-```
-#&gt;    growth temperature
-#&gt; 1    29.0          21
-#&gt; 2    15.7          14
-#&gt; 3     9.6          14
-#&gt; 4    33.2          24
-#&gt; 5    45.3          28
-#&gt; 6    28.1          26
-#&gt; 7    24.8          23
-#&gt; 8    42.0          30
-#&gt; 9    18.5          18
-#&gt; 10   26.3          26
-#&gt; 11   38.8          28
-#&gt; 12   44.1          27
-```
-]
-
---
-
-.pull-right[
-
-**What we do**
-
-Plot the data first!!
-
-Use the `lm()` function with a **formula**
-
- - `response ~ predictor` is the formula
- - those columns live in `data = example_data`
-
-
-
-```r
-example_data_lm &lt;-
-  lm(
-    formula = growth ~ temperature, 
-    data = example_data
-  )
-```
-
-Then use `summary()` for the fit details
-
-
-```r
-summary(example_data_lm)
-```
-
-]
-
----
-
-# Simple linear regression in R
-
-Always assign the result to a variable (we use it later)
-
-
-```r
-example_data_lm &lt;- lm(formula = growth ~ temperature, data = example_data)
-```
-
---
-
-The printed result is very brief
-
- - it provides the `\(\alpha\)` and `\(\beta\)` coefficients
-
-
-```r
-example_data_lm
-```
-
-```
-#&gt; 
-#&gt; Call:
-#&gt; lm(formula = growth ~ temperature, data = example_data)
-#&gt; 
-#&gt; Coefficients:
-#&gt; (Intercept)  temperature  
-#&gt;      -1.085        1.328
-```
-
----
-
-# Simple linear regression in R
-
-We have to use **accessor functions** to obtain other information about the model e.g. `summary()`
-
-
-```r
-summary(fit1)
-```
-
---
-
-.pull-left-66[
-
-```
-#&gt; 
-#&gt; Call:
-#&gt; lm(formula = growth ~ temperature, data = example_data)
-#&gt; 
-#&gt; Residuals:
-#&gt;     Min      1Q  Median      3Q     Max 
-#&gt; -10.925  -5.798   1.548   3.010  14.547 
-#&gt; 
-#&gt; Coefficients:
-#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    
-#&gt; (Intercept)  -1.0854     5.5054  -0.197    0.846    
-#&gt; temperature   1.3282     0.2493   5.328 4.59e-05 ***
-#&gt; ---
-#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#&gt; 
-#&gt; Residual standard error: 7.267 on 18 degrees of freedom
-#&gt; Multiple R-squared:  0.612,	Adjusted R-squared:  0.5904 
-#&gt; F-statistic: 28.39 on 1 and 18 DF,  p-value: 4.591e-05
-```
-]
-
-.pull-right-33[
-
-- Model estimates for `\(\alpha\)` and `\(\beta\)`
- 
-- Statistical tests for `\(\alpha\)` and `\(\beta\)`
-
-- R&lt;sup&gt;2&lt;/sup&gt;
-
-- Other information
-
-]
-
-.footnote[
-
-]
-
----
-
-# Model assumptions
-
-Graphical diagnostics help us determine
-
- - random spread of points around the regrssion line: **the trend is linear**
- - if there is even spread around the regression line: **constant variance**
- 
-**Data transformation** may be required e.g. log(response)
-
---
-
-.pull-left[
-
-```r
-plot(example_data_lm, which = 1, pch = 19)
-```
-
-&lt;img src="04-Module-4-basic-statistics_files/figure-html/unnamed-chunk-35-1.png" width="60%" style="display: block; margin: auto;" /&gt;
-]
-
---
-
-.pull-right[
-
-Patterns to look for
-
-&lt;img src="images/residual-patterns.png" width="75%" style="display: block; margin: auto;" /&gt;
-
-]
-
---
-
-.footnote[
-
-We can check these for `aov()` too
-
-]
-
----
-
-# If all is good, other accessor functions
-
-Interpret the model
-
-
-```r
-summary(example_data_lm) # shown earilier
-```
---
-Obtain estimates and confidence intervals
-
-
-```r
-cbind(
-  Est. = coef(example_data_lm),
-  confint(example_data_lm)
-)
-```
-
-```
-#&gt;                  Est.       2.5 %    97.5 %
-#&gt; (Intercept) -1.085408 -12.6518572 10.481041
-#&gt; temperature  1.328218   0.8044689  1.851968
-```
---
-Predict values
-
-
-```r
-predict(example_data_lm, newdata = data.frame(temperature = c(10,20, 30)), interval = 'confidence')
-```
-
-```
-#&gt;        fit       lwr      upr
-#&gt; 1 12.19678  5.454835 18.93872
-#&gt; 2 25.47896 22.016662 28.94126
-#&gt; 3 38.76114 32.983258 44.53903
-```
-
----
-
-# If all is good, other accessor functions
-
-Further statistical testing of predictors
-
-
-```r
-anova(example_data_lm)
-```
-
-```
-#&gt; Analysis of Variance Table
-#&gt; 
-#&gt; Response: growth
-#&gt;             Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
-#&gt; temperature  1 1499.19 1499.19  28.387 4.591e-05 ***
-#&gt; Residuals   18  950.64   52.81                      
-#&gt; ---
-#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-
----
-
-# Multiple linear regression
-
-Linear models can be easily extended for more complex situations
-
-  - Is temperature and rainfall good predictor of plant height?
-  
-
-```r
-# Two continuous predictors
-lm(height ~ temperature + rainfall)
-```
-
-  - Is the relationship between flipper length an body mass the same between species?
-
-
-```r
-# Continuous and categorical predictor
-lm(body_mass_g ~ flipper_length_mm * species)
-```
-
- - Which blood markers best predict the redness of certain skin disease
- 
-
-```r
-# Many predictors, where a search algorthm can be used to find best predictors
-lm(redness ~ marker1 + marker2 + marker3 + marker4 + marker5)
-```
-
-
----
-
-# Multiple regression summaries
-
-Have reference groups and then **differences** of groups to the reference
-  - This allows us to compare intercept and slope between groups
-
---
-
-E.g. For the model
-
-
-```r
-# Growth measures for different temperature at 2 different sites
-lm(growth ~ temperature * site)
-```
-
---
-
-
-```
-#&gt; Coefficients:
-#&gt;                                   Estimate Std. Error t value Pr(&gt;|t|)    
-#&gt; (Intercept)                             10     0.7093  52.953   &lt;2e-16 ***
-#&gt; temperature                              2     0.1434 -19.946   &lt;2e-16 ***
-#&gt; site2                                    2     1.2110  -0.623    0.536    
-#&gt; temperature:site2                       -1     0.2464  -0.602    0.550
-```
-
---
-
-Site 1 - Intercept = 10, slope = 2  
-Site 2 - Intercept = (10 + 2) = 12, slope = (2 - 1) = 1
-
-The intercept and slope for Site 2 is not significantly different from Site 1 ...
-
----
-
-class: center, middle, inverse
-
-# Exercise time!
-
-.section-subtitle[
-
-Open the file
-
-.inverse[`...`]
-
-and attempt to do the exercises.
-
-We will discuss them shortly
-
-
-]
-
----
-
-# Moving forward with linear models
-
-Linear modeling is a backbone of R .. if you do continue with them, here some tips
-
- - Normal linear models are  created with `lm()`
-
- - Generalised linear models are created with `glm()`
- 
- - Generalised additive models with `gam()` from `mgcv` package
- 
- - Mixed effect models with `lmer()` from `lme4` package
- 
- 
----
-
-
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
