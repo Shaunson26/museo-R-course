@@ -104,34 +104,34 @@ turtle_hatching_tukey$_ %>%  # select the table
 
 # Import data
 bags <-
-  readr::read_csv('data/bag_strength.csv')
+  readr::read_csv()
 
 # Examine data and prepare
 bags %>% 
-  count(hardwood_conc_pct)
+  count(_)
 
 bags %>% 
-  ggplot(aes(x = hardwood_conc_pct, y = tensile_stgh_psi)) +
-  geom_boxplot()
+  ggplot(aes(x = _, y = _)) +
+  _
 
 bags <- 
   bags %>% 
-  mutate(hardwood_conc_pct = factor(hardwood_conc_pct))
+  mutate(_ = factor(_))
 
 bags %>% 
-  ggplot(aes(x = factor(hardwood_conc_pct), y = tensile_stgh_psi)) +
+  ggplot(aes(x = _, y = _)) +
   geom_boxplot()
 
 # ANOVA
 bags_aov <-
-  aov(tensile_stgh_psi ~ hardwood_conc_pct, data = bags)
+  aov(_ ~ _, data = _)
 
-bags_aov %>% 
+_ %>% 
   summary()
 
 # Pairwise comparisons 
 bags_aov %>% 
-  TukeyHSD()
+  _()
 
 # 2.2 Two factor ANOVA - Battery life ----
 # battery_life.csv contains data on battery life under different temperature and
@@ -143,35 +143,35 @@ bags_aov %>%
 
 # Import battery_life.csv
 battery_life <-
-  readr::read_csv("data/battery_life.csv")
+  readr::read_csv(_)
 
 # Examine data
 battery_life %>% 
-  count(temperature, material_type)
+  count(_, _)
 
 # Prepare data
 # material_type is numeric and needs to be a factor
 # temperature requires used to specific the levels of the factor for low, med, high
 battery_life <-
   battery_life %>% 
-  mutate(material_type = factor(material_type),
-         temperature = factor(temperature, levels = c('low_-10C', 'med_20C', 'high_45C')))
+  mutate(material_type = factor(_),
+         temperature = factor(_, levels = c(_)))
 
 # Plot data
 battery_life %>% 
-  ggplot(aes(x=temperature, y = life_h, colour = material_type)) +
+  ggplot(aes(x=_, y = _, colour = _)) +
   geom_point() +
-  stat_summary(mapping = aes(group = material_type), geom = 'line', fun = 'mean')
+  stat_summary(mapping = aes(group = _), geom = 'line', fun = 'mean')
 
 # Conduct ANOVA
 battery_aov <-
-  aov(life_h ~ temperature * material_type, data = battery_life)
+  aov(life_h ~ _ * _, data = _)
 
-battery_aov %>% 
+_ %>% 
   summary()
 
 # Conduct pairwise comparisons
-TukeyHSD(battery_aov)
+TukeyHSD(_)
 
 
 ## Conclusion ----
