@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Module 3</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.26/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: middle, inverse, title
+
+&lt;style type="text/css"&gt;
+h1 {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+&lt;/style&gt;
+
+
+
+# Revision 
+
+.section-subtitle[
+
+- RStudio, scripts and projects
+- Data type and vectors
+- Functions
+- Help
+- Data structures
+- Data manipulation
+- Data visualisation
+- Basic statistics
+
+]
+
+---
+
+
+class: middle, center
+background-image: url(images/rstudio-screenshot-labelled.png)
+background-size: contain
+
+---
+
+# Code organisation in scripts
+
+We keep our code in scripts called `.R` files, simple text files ..
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="images/an-r-script.png" alt="An R script" width="100%" /&gt;
+&lt;p class="caption"&gt;An R script&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+# Code organisation in scripts - writing comments
+
+We use `#` (hash) to create comments in our scripts, and they are not interpreted as code
+
+
+```r
+# Title: A script to do a particular task
+# Date created: Today
+# Details: These are the details of my work
+# Last modified: Tomorrow
+
+my_data &lt;- read.csv('a-data-file.csv')
+
+# This is will be used in future calculations
+days_in_6_months &lt;- 365 / 12 * 6 
+
+
+# Can also be at the end of the line ..
+
+days_in_6_months &lt;- 365 / 12 * 6  # This is will be used in future calculations
+```
+
+---
+
+# RStudio projects
+
+RStudio supports projects to allow all files associated with a project to be kept together.
+
+ - An `.Rproj` file will open RStudio
+ - The working directory will be the same folder
+
+.pull-left[
+&lt;img src="images/rstudio-project-file.png" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="images/rstudio-project-screenshot.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# RStudio helps you code
+
+**keyboard shortcuts**
+
+```
+ctrl/cmd + enter       # enter code from script to console
+ctrl/cmd + shift + m   # %&gt;% shortcut
+```
+
+--
+
+
+`&lt;tab&gt;` completions helps
+ - with finding files in file paths
+ - completing function names
+ - finding columns names for functin arguments
+
+
+---
+
+# R packages - CRAN
+
+
+We **install** a package onto the computer using:
+
+
+```r
+install.packages('tidyverse')
+```
+
+--
+
+And **load** them into our **current R session** using
+
+
+```r
+library(tidyverse)
+# Now can use tidyverse functions
+```
+
+
+.footnote[
+
+**You should have installed `tidyverse` prior to the course!**
+
+]
+
+---
+
+# Installing verus loading a package
+
+**Installing** a package with `install.package()` downloads the package&lt;sup&gt;1&lt;/sup&gt; to your computer
+ 
+   - You do this once, or when you want to **update** a package
+   
+&lt;img src="images/internet-to-computer.png" width="300px" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+.footnote[
+[1] It may actually download **multiple packages** (including those itself uses)
+]
+
+--
+
+ **Loading** a package using `library()` makes the package available to your current R session
+ 
+   - You need to load packages very time you start R/RStudio
+   - At the beginning of your R scripts you should load the packages required
+   
+&lt;img src="images/computer-to-R.png" width="300px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Functions are used a lot in R
+
+Functions have **arguments**, arguments have **values** 
+
+
+```r
+function_name(argument1 = value1, argument2 = value2, ...)
+```
+&lt;br&gt;
+
+--
+
+
+```r
+seq(from = 0, to = 10, by = 2)
+```
+
+```
+#&gt; [1]  0  2  4  6  8 10
+```
+
+---
+
+# What arguments and information are available for a function?
+
+Executing the function with `?` before it opens **help documentation**
+
+
+```r
+?seq
+```
+
+--
+
+.pull-left[
+&lt;img src="images/help-documentation.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+
+- R help documentation is standardised
+
+  - Title
+  - Description
+  - Usage
+  - Arguments
+  - Further details
+  - Examples
+
+]
+
+---
+
+# What arguments and information are available for a function?
+
+Do not be afraid to ask Google!
+
+&lt;img src="images/google-help.png" width="700px" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Data vectors
+
+We store and work with data in **vectors** ... think columns of a spreadsheet&lt;sup&gt;1&lt;/sup&gt; 
+
+.footnote[
+[1] we will soon see them in columns of a **data.frame**
+]
+
+
+```r
+c(5, 7, 2, 5, 6)
+```
+
+```
+#&gt; [1] 5 7 2 5 6
+```
+&lt;br&gt;
+--
+
+
+```r
+c("Tom", "Jerry", "Quacker")
+```
+
+```
+#&gt; [1] "Tom"     "Jerry"   "Quacker"
+```
+&lt;br&gt;
+--
+
+
+```r
+c(Sys.Date(), Sys.Date() - 1, Sys.Date() - 2)
+```
+
+```
+#&gt; [1] "2024-05-29" "2024-05-28" "2024-05-27"
+```
+
+---
+
+# Vectors are columns in a data.frame
+
+A rectangular collection of vectors of different types ... a "spreadsheet of data"
+
+ - **columns** are vectors
+ - **rows** are values across columns
+ - the most important object in R for data analysis 
+
+
+
+
+```
+#&gt;   numbers    text logical      dates factors
+#&gt; 1       5     Tom    TRUE 2024-01-01     Tom
+#&gt; 2       7   Jerry   FALSE 2024-01-02   Jerry
+#&gt; 3       2 Quacker    TRUE 2024-01-03 Quacker
+```
+
+---
+
+class: middle, center
+&lt;img src="images/r-data-structures.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Accessing columns in data.frames
+  
+Accessing columns using `$` (the dollar sign) and `[[]]` (double square brackets)
+
+
+```r
+example_dataframe
+```
+
+```
+#&gt;   numbers    text logical      dates factors
+#&gt; 1       5     Tom    TRUE 2024-01-01     Tom
+#&gt; 2       7   Jerry   FALSE 2024-01-02   Jerry
+#&gt; 3       2 Quacker    TRUE 2024-01-03 Quacker
+```
+&lt;br&gt;
+--
+
+
+```r
+example_dataframe$text
+```
+
+```
+#&gt; [1] "Tom"     "Jerry"   "Quacker"
+```
+&lt;br&gt;
+--
+
+
+```r
+example_dataframe[['text']]
+```
+
+```
+#&gt; [1] "Tom"     "Jerry"   "Quacker"
+```
+
+---
+
+# Indexing data frames
+  
+As with matricies `[rows, columns]`
+
+
+```r
+# First 2 columns
+example_dataframe[, 1:2]
+```
+
+```
+#&gt;   numbers    text
+#&gt; 1       5     Tom
+#&gt; 2       7   Jerry
+#&gt; 3       2 Quacker
+```
+
+--
+
+
+```r
+# Columns by name
+example_dataframe[ example_dataframe$text == 'Tom' , c('text', 'dates')]
+```
+
+```
+#&gt;   text      dates
+#&gt; 1  Tom 2024-01-01
+```
+
+--
+
+.footnote[
+**Important**: this is a "traditional" way of row and column selection. We will use tidyverse methods in future.
+]
+
+---
+
+
+# Importing a CSV file with readr
+
+The **`readr`** improves importing text files into R.
+
+
+```r
+library(readr)
+```
+
+--
+
+`read_csv()` takes
+
+- a **file path&lt;sup&gt;1&lt;/sup&gt;** as input
+- provides useful information about the import of the data
+- returns a tibble data.frame
+
+
+```r
+students &lt;- read_csv(file = "data/students.csv")
+```
+
+.footnote[
+[1] File paths are a location on your computer. Often a difficulty for beginners to understand, we will examine in exercises.
+]
+
+---
+
+# Data transformation and manipulation with **`dplyr`** 
+
+
+- `mutate()` adds new variables that are functions of existing variables
+- `select()` picks variables based on their names.
+- `filter()` picks cases based on their values.
+- `summarise()` reduces multiple values down to a single summary.
+- `arrange()` changes the ordering of the rows.
+- `group_by()` groups data for subsequent operations 
+
+---
+
+# dplyr and the pipe operator
+
+
+```r
+data %&gt;% 
+  filter() %&gt;% 
+  select() %&gt;% 
+  group_by() %&gt;% 
+  summarise()
+```
+
+---
+
+# **`dplyr`** joining functions
+
+&lt;img src="images/join.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Reshaping data with the **`tidyr`** package
+
+ - `pivot_wider()` - long to wide transformation
+ - `pivot_longer()`- wide to long transformation
+
+
+
+--
+
+.pull-left[
+
+.large[Wide]
+
+
+```r
+gene_data
+```
+
+```
+#&gt; # A tibble: 6 × 7
+#&gt;   Trt     Rep Gene1 Gene2 Gene3 Gene4 Gene5
+#&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 A         1    10     6    11     7     8
+#&gt; 2 A         2    10    10     5     9     9
+#&gt; 3 A         3    10     6     3     3     8
+#&gt; 4 B         1     8     7     3    12     6
+#&gt; 5 B         2     9    11     6    10     9
+#&gt; 6 B         3     9     5     3    11    15
+```
+
+]
+
+--
+
+.pull-right[
+
+.large[Long]
+
+
+
+
+```r
+gene_data_long
+```
+
+```
+#&gt; # A tibble: 30 × 4
+#&gt;    Trt     Rep Gene  Count
+#&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+#&gt;  1 A         1 Gene1    10
+#&gt;  2 A         1 Gene2     6
+#&gt;  3 A         1 Gene3    11
+#&gt;  4 A         1 Gene4     7
+#&gt;  5 A         1 Gene5     8
+#&gt;  6 A         2 Gene1    10
+#&gt;  7 A         2 Gene2    10
+#&gt;  8 A         2 Gene3     5
+#&gt;  9 A         2 Gene4     9
+#&gt; 10 A         2 Gene5     9
+#&gt; 11 A         3 Gene1    10
+#&gt; 12 A         3 Gene2     6
+#&gt; 13 A         3 Gene3     3
+#&gt; # ℹ 17 more rows
+```
+
+]
+
+---
+
+# How ggplot works
+
+Within the `ggplot()` function, we include
+ - **Data** - a data.frame
+ -  **Aesthetic mappings** -  what columns map to plot components (x, y, colour, shape, etc ..)
+ 
+Next we add layers using the plus symbol `+` .. similar to the pipe  
+ - **Geoms** - what geometrical object represents the data e.g. points, lines, bars, boxplot ...
+ - **Configurations** - controlling the plot components e.g. axes, colours and shapes ...
+ - **Labels** - axes and plot titles
+ - **Themes** - futher control of plot components e.g. fonts, lines, legend styling ...
+
+
+
+```r
+ggplot(data = penguins,                                             # data                      
+       mapping = aes(x = flipper_length_mm, y = body_mass_g)) +     # aesthetics
+  geom_point() +                                                    # geom
+  geom_line() +                                                     # another geom
+  scale_x_continuous(breaks = seq(from = 180, to = 220, by = 10)) + # x-axis
+  labs(x = "Flipper length (mm)", title = "A plot title") +         # labels
+  theme(text = element_text(size = 14))                             # theme
+```
+
+---
+
+# Basic statistics in R
+
+The **formula** interface
+
+ - t-test
+ 
+
+```r
+t.test(response ~ group, data = example_data, var.equal = TRUE)
+```
+
+ - ANOVA
+ 
+
+```r
+aov(response ~ group, data = example_data)
+summary()
+TukeyHSD()
+```
+ 
+ - Linear models (linear regression)
+ 
+
+```r
+lm(formula = growth ~ temperature, data = example_data)
+summary()
+plot() # diagnostics
+predict()
+```
+
+---
+
+# Assignment / final project
+
+Your favourite supervisor understands you just went to do an introductory R course.
+
+--
+
+They are too busy to analyse a dataset and they want you to prepare something that they can use in a talk. 
+
+--
+
+The dataset is from an experiment examining the effect of vitamin C on tooth growth in guinea pigs that a student conducted. They examined the effect of using different delivery methods of vitamin C (orange juice or ascorbic acid) and then measured the length of odontoblasts (cells responsible for tooth growth) in 60 guinea pigs.
+
+--
+
+They would like in a MS word document:
+
+  1.	A plot of cell growths by delivery method (a file in the analysis folder too)
+  2.	A table of summary statistics - mean, standard deviation, standard error, number of samples for each delivery method
+  3.	A summary of a statistical test that compares cell growths by delivery method
+
+They would like you to have all your analysis done within a single folder where the data, R scripts and outputs are kept so that they can reproduce the analysis you conducted.
+
+--
+
+They have emailed you the data file.
+
+You are not allowed to make edits to the data file.
+
+Can you start a new RStudio project and complete the task?
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
